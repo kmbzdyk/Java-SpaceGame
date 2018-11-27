@@ -559,6 +559,7 @@ public class GameEngine {
                     asteroids[i] = null;
                     if (a.hullStrength < a.maxHull-5) {
                         a.hullStrength += 5;
+                        System.out.println("bla");
                     }
                 }
 
