@@ -128,6 +128,8 @@ public class GameEngine {
      * this array are skipped during drawing and movement processing.
      */
     private Asteroid[] asteroids;
+    
+    private Blaster[] blasters;
 
     /**
      * Constructor that creates a GameEngine object and connects it with a
@@ -554,16 +556,24 @@ public class GameEngine {
                 }
             }
         }
-        for (int i = 0; i < asteroids.length; i++) {
-                if (asteroids[i] != null && asteroids[i].getX() == alienX && asteroids[i].getY() == alienY) {
-                    asteroids[i] = null;
-                    if (a.hullStrength < a.maxHull-5) {
+        for (Asteroid asteroid : asteroids) {
+            if (asteroid != null && asteroid.getX() == alienX && asteroid.getY() == alienY) {
+                int counter = 0;
+                while (counter < 1) {
+                    int randomIndex = (int) (rng.nextDouble() * getSpawns().size() - 1);
+                    Point point = getSpawns().get(randomIndex);
+                    int pointX = (int) point.getX();
+                    int pointY = (int) point.getY();
+                    if (pointX != playerX || pointY != playerY) {
+                        asteroid.setPosition(pointX, pointY);
+                        counter++;
+                    }
+                    if (a.hullStrength < a.maxHull - 5) {
                         a.hullStrength += 5;
-                        System.out.println("bla");
                     }
                 }
-
             }
+        }
     }
 
     /**
@@ -654,6 +664,46 @@ public class GameEngine {
                 }
 
             }
+        }
+    }
+    
+    private Blaster[] fireBlaster() {
+        int playerX = player.getX();
+        int playerY = player.getY();
+        blasters = new Blaster[4];
+        if (playerX > 0 && tiles[playerX - 1][playerY] != TileType.BLACK_HOLE) {
+            blasters[0] = new Blaster(playerX - 1, playerY, Asteroid.Direction.LEFT);
+        }
+        else {
+            blasters[0] = null;
+        }
+        if (playerX < GRID_WIDTH - 1 && tiles[playerX + 1][playerY] != TileType.BLACK_HOLE) {
+            blasters[1] = new Blaster(playerX + 1, playerY, Asteroid.Direction.RIGHT);
+        }
+        else {
+            blasters[1] = null;
+        }
+        if (playerY < GRID_HEIGHT - 1 && tiles[playerX][playerY + 1] != TileType.BLACK_HOLE) {
+            blasters[2] = new Blaster(playerX, playerY + 1, Asteroid.Direction.DOWN);
+        }
+        else {
+            blasters[2] = null;
+        }
+        if (playerY > 0 && tiles[playerX][playerY - 1] != TileType.BLACK_HOLE) {
+            blasters[3] = new Blaster(playerX, playerY - 1, Asteroid.Direction.UP);
+        } else {
+            blasters[3] = null;
+        }
+        
+        return blasters;
+    }
+    
+    private void moveBlasters() {
+        for (Blaster blaster : blasters) {
+            if (blaster != null) {
+                
+            }
+            
         }
     }
 
