@@ -542,13 +542,6 @@ public class GameEngine {
         } else if (playerX > playerX + 1) {
             alienX--;
         }
-        for (Alien eachAlien : aliens) {
-            if (eachAlien != null) {
-                if (eachAlien.getX() != alienX || eachAlien.getY() != alienY) {
-                    a.setPosition(alienX, alienY);
-                }
-            }
-        }
         if (alienY < playerY - 1) {
             alienY++;
         } else if (alienY > playerY + 1) {
@@ -561,7 +554,15 @@ public class GameEngine {
                 }
             }
         }
-        
+        for (int i = 0; i < asteroids.length; i++) {
+                if (asteroids[i] != null && asteroids[i].getX() == alienX && asteroids[i].getY() == alienY) {
+                    asteroids[i] = null;
+                    if (a.hullStrength < a.maxHull-5) {
+                        a.hullStrength += 5;
+                    }
+                }
+
+            }
     }
 
     /**
