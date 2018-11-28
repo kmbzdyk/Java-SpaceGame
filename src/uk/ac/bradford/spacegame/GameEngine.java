@@ -14,7 +14,7 @@ import java.util.Random;
  * creating levels, the player, aliens and asteroids, as well as updating
  * information when a key is pressed while the game is running.
  *
- * @author prtrundl
+ * @author prtrundl & klaudiabzdyk
  */
 public class GameEngine {
 
@@ -78,6 +78,8 @@ public class GameEngine {
      */
     private int points = 0;
 
+    private int blasterCheck = 0;
+    
     /**
      * Tracks the current turn number. Used to control pulsar activation and
      * asteroid movement.
@@ -128,7 +130,7 @@ public class GameEngine {
      * this array are skipped during drawing and movement processing.
      */
     private Asteroid[] asteroids;
-    
+
     private Blaster[] blasters;
 
     /**
@@ -233,6 +235,14 @@ public class GameEngine {
         }
         return spawns;
     }
+    
+    private Blaster[] createBlastersList() {
+        blasters = new Blaster[4];
+        for (Blaster blaster : blasters) {
+            blaster = null;
+        }
+        return blasters;
+    }
 
     /**
      * Spawns aliens in suitable locations in the current level. The method uses
@@ -307,23 +317,24 @@ public class GameEngine {
                 if ((asteroids[i] != null && asteroids[i].getX() == playerX) && (asteroids[i].getY() == playerY)) {
                     asteroids[i] = null;
                     points++;
+                    blasterCheck++;
                 }
 
             }
-        } 
-        else if ((playerX - 1) == -1 && tiles[GRID_WIDTH-1][playerY] != TileType.BLACK_HOLE) {
-            player.setPosition(GRID_WIDTH-1, playerY);
+        } else if ((playerX - 1) == -1 && tiles[GRID_WIDTH - 1][playerY] != TileType.BLACK_HOLE) {
+            player.setPosition(GRID_WIDTH - 1, playerY);
             for (int i = 0; i < asteroids.length; i++) {
-                if (asteroids[i] != null && asteroids[i].getX() == GRID_WIDTH-1 && asteroids[i].getY() == playerY) {
+                if (asteroids[i] != null && asteroids[i].getX() == GRID_WIDTH - 1 && asteroids[i].getY() == playerY) {
                     asteroids[i] = null;
                     points++;
+                    blasterCheck++;
                 }
 
             }
-        }
-        else {
+        } else {
             if (points > 0) {
                 points--;
+                blasterCheck--;
             }
         }
 
@@ -348,23 +359,24 @@ public class GameEngine {
                 if (asteroids[i] != null && asteroids[i].getX() == playerX && asteroids[i].getY() == playerY) {
                     asteroids[i] = null;
                     points++;
+                    blasterCheck++;
                 }
 
             }
-        } 
-        else if ((playerX + 1) == GRID_WIDTH && tiles[0][playerY] != TileType.BLACK_HOLE) {
+        } else if ((playerX + 1) == GRID_WIDTH && tiles[0][playerY] != TileType.BLACK_HOLE) {
             player.setPosition(0, playerY);
             for (int i = 0; i < asteroids.length; i++) {
                 if (asteroids[i] != null && asteroids[i].getX() == 0 && asteroids[i].getY() == playerY) {
                     asteroids[i] = null;
                     points++;
+                    blasterCheck++;
                 }
 
             }
-        }
-        else {
+        } else {
             if (points > 0) {
                 points--;
+                blasterCheck--;
             }
         }
 
@@ -389,23 +401,24 @@ public class GameEngine {
                 if (asteroids[i] != null && asteroids[i].getX() == playerX && asteroids[i].getY() == playerY) {
                     asteroids[i] = null;
                     points++;
+                    blasterCheck++;
                 }
 
             }
-        } 
-        else if ((playerY - 1) == -1 && tiles[playerX][GRID_HEIGHT-1] != TileType.BLACK_HOLE) {
-            player.setPosition(playerX, GRID_HEIGHT-1);
+        } else if ((playerY - 1) == -1 && tiles[playerX][GRID_HEIGHT - 1] != TileType.BLACK_HOLE) {
+            player.setPosition(playerX, GRID_HEIGHT - 1);
             for (int i = 0; i < asteroids.length; i++) {
-                if (asteroids[i] != null && asteroids[i].getX() == playerX && asteroids[i].getY() == GRID_HEIGHT-1) {
+                if (asteroids[i] != null && asteroids[i].getX() == playerX && asteroids[i].getY() == GRID_HEIGHT - 1) {
                     asteroids[i] = null;
                     points++;
+                    blasterCheck++;
                 }
 
             }
-        }
-        else {
+        } else {
             if (points > 0) {
                 points--;
+                blasterCheck--;
             }
         }
 
@@ -430,23 +443,24 @@ public class GameEngine {
                 if (asteroids[i] != null && asteroids[i].getX() == playerX && asteroids[i].getY() == playerY) {
                     asteroids[i] = null;
                     points++;
+                    blasterCheck++;
                 }
 
             }
-        } 
-        else if ((playerY + 1) == GRID_HEIGHT && tiles[playerX][0] != TileType.BLACK_HOLE) {
+        } else if ((playerY + 1) == GRID_HEIGHT && tiles[playerX][0] != TileType.BLACK_HOLE) {
             player.setPosition(playerX, 0);
             for (int i = 0; i < asteroids.length; i++) {
                 if (asteroids[i] != null && asteroids[i].getX() == playerX && asteroids[i].getY() == 0) {
                     asteroids[i] = null;
                     points++;
+                    blasterCheck++;
                 }
 
             }
-        }
-        else {
+        } else {
             if (points > 0) {
                 points--;
+                blasterCheck--;
             }
         }
 
@@ -666,67 +680,117 @@ public class GameEngine {
             }
         }
     }
-    
+
     private Blaster[] fireBlaster() {
         int playerX = player.getX();
         int playerY = player.getY();
-        blasters = new Blaster[4];
         if (playerX > 0 && tiles[playerX - 1][playerY] != TileType.BLACK_HOLE) {
             blasters[0] = new Blaster(playerX - 1, playerY, Asteroid.Direction.LEFT);
-        }
-        else {
-            blasters[0] = null;
-        }
+        } 
         if (playerX < GRID_WIDTH - 1 && tiles[playerX + 1][playerY] != TileType.BLACK_HOLE) {
             blasters[1] = new Blaster(playerX + 1, playerY, Asteroid.Direction.RIGHT);
-        }
-        else {
-            blasters[1] = null;
-        }
+        } 
         if (playerY < GRID_HEIGHT - 1 && tiles[playerX][playerY + 1] != TileType.BLACK_HOLE) {
             blasters[2] = new Blaster(playerX, playerY + 1, Asteroid.Direction.DOWN);
-        }
-        else {
-            blasters[2] = null;
-        }
+        } 
         if (playerY > 0 && tiles[playerX][playerY - 1] != TileType.BLACK_HOLE) {
             blasters[3] = new Blaster(playerX, playerY - 1, Asteroid.Direction.UP);
-        } else {
-            blasters[3] = null;
-        }
-        
-        return blasters;
-    }
-    
-    private void moveBlasters() {
+        } 
         for (Blaster blaster : blasters) {
             if (blaster != null) {
-                
             }
             
         }
+        return blasters;
     }
 
-    /**
-     * Called in response to the player collecting enough points win the current
-     * level. The method increases the valued of cleared by one, resets the
-     * value of points to zero, generates a new level by calling the
-     * generateLevel method, fills the spawns ArrayList with suitable spawn
-     * locations, then spawns aliens and asteroids. Finally it places the player
-     * in the new level by calling the placePlayer() method. Note that a new
-     * player object should not be created here as this will reset the player's
-     * health to maximum.
-     */
+    private void moveBlasters() {
+        for (Blaster blaster : blasters) {
+            if (blaster != null) {
+                Asteroid.Direction bDirection = blaster.getBlasterDirection();
+                int blasterX = blaster.getX();
+                int blasterY = blaster.getY();
+                System.out.println(blasterX);
+                System.out.println(blasterY);
+                switch (bDirection) {
+                    case LEFT: if (blasterX > 0 && tiles[blasterX - 1][blasterY] != TileType.BLACK_HOLE) {
+                        blaster.setPosition(blasterX-1, blasterY);
+                    }
+                    else {
+                        blaster = null;
+                    }
+                    break;
+                    case RIGHT: if (blasterX < GRID_WIDTH - 1 && tiles[blasterX + 1][blasterY] != TileType.BLACK_HOLE) {
+                        blaster.setPosition(blasterX + 1, blasterY);
+                    }
+                    else {
+                        blaster = null;
+                    }
+                    break;
+                    case UP: if (blasterY > 0  && tiles[blasterX][blasterY + 1] != TileType.BLACK_HOLE) {
+                        blaster.setPosition(blasterX, blasterY - 1);
+                    }
+                    else {
+                        blaster = null;
+                    }
+                    break;
+                    case DOWN: if (blasterY < GRID_HEIGHT - 1 && tiles[blasterX][blasterY - 1] != TileType.BLACK_HOLE) {
+                        blaster.setPosition(blasterX, blasterY + 1);
+                    }
+                    else {
+                        blaster = null;
+                    }
+                    break;
+                }  
+                if (blaster != null) {
+                    blasterX = blaster.getX();
+                    blasterY = blaster.getY();
+                    for (Asteroid asteroid : asteroids) {
+                        if (asteroid != null) {
+                            if (asteroid.getX() == blasterX && asteroid.getY() == blasterY) {
+                                asteroid = null;
+                                points++;
+                                blasterCheck++;
+                            }
+                        }
+                    }
+                    for (Alien alien : aliens) {
+                        if (alien != null) {
+                            if (alien.getX() == blasterX && alien.getY() == blasterY) {
+                                if (alien.hullStrength > 5) {
+                                    alien.hullStrength -= 5;
+                                } else {
+                                    alien = null;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+        /**
+         * Called in response to the player collecting enough points win the
+         * current level. The method increases the valued of cleared by one,
+         * resets the value of points to zero, generates a new level by calling
+         * the generateLevel method, fills the spawns ArrayList with suitable
+         * spawn locations, then spawns aliens and asteroids. Finally it places
+         * the player in the new level by calling the placePlayer() method. Note
+         * that a new player object should not be created here as this will
+         * reset the player's health to maximum.
+         */
     private void newLevel() {
         cleared++;
-        BLACK_HOLE_CHANCE += cleared/2;
-        PULSAR_CHANCE += cleared/2;
+        BLACK_HOLE_CHANCE += cleared / 2;
+        PULSAR_CHANCE += cleared / 2;
         points = 0;
+        blasterCheck = 0;
         generateLevel();
         getSpawns();
         spawnAliens();
         spawnAsteroids();
         placePlayer();
+        createBlastersList();
 
     }
 
@@ -751,6 +815,7 @@ public class GameEngine {
      * level.
      */
     public void doTurn() {
+        int counter = 0;
         if (turnNumber % 20 == 0) {
             activatePulsars();
         }
@@ -760,15 +825,28 @@ public class GameEngine {
         if (turnNumber % 10 == 5) {
             moveAsteroids();
         }
+        for (Blaster blaster : blasters) {
+            if (blaster != null) {
+                counter++;
+            }
+        }
+        if (counter > 0) {
+                moveBlasters();
+                System.out.println("ruszyło się");
+            }
+        if (points % 5 == 0 && blasterCheck == 5) {
+            fireBlaster();
+            blasterCheck++;
+        }                   
         moveAliens();
         pulsarDamage();
         if (player.getHullStrength() < 1) {
             System.exit(0);
         }
-        if (points >= 5) {
+        if (points >= 10) {
             newLevel();
         }
-        gui.updateDisplay(tiles, player, aliens, asteroids);
+        gui.updateDisplay(tiles, player, aliens, asteroids, blasters);
         turnNumber++;
     }
 
@@ -784,6 +862,8 @@ public class GameEngine {
         asteroids = spawnAsteroids();
         aliens = spawnAliens();
         player = spawnPlayer();
-        gui.updateDisplay(tiles, player, aliens, asteroids);
+        blasters = createBlastersList();
+        gui.updateDisplay(tiles, player, aliens, asteroids, blasters);
     }
 }
+
