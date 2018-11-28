@@ -17,7 +17,7 @@ import uk.ac.bradford.spacegame.GameEngine.TileType;
  * The GameGUI class is responsible for rendering graphics to the screen to display
  * the game grid, players, asteroids and aliens. The GameGUI class passes keyboard
  * events to a registered InputHandler to be handled.
- * @author prtrundl
+ * @author prtrundl & klaudiabzdyk
  */
 public class GameGUI extends JFrame {
     
@@ -82,9 +82,10 @@ public class GameGUI extends JFrame {
      * @param asteroids An array of Asteroid objects that is processed to draw the
      * asteroids on the map. null elements in the array, or a null array are both
      * permitted, and any null arrays or null elements in the array will be skipped.
+     * @param blasters
      */
-    public void updateDisplay(TileType[][] tiles, Player player, Alien[] aliens, Asteroid[] asteroids) {
-        canvas.update(tiles, player, aliens, asteroids);
+    public void updateDisplay(TileType[][] tiles, Player player, Alien[] aliens, Asteroid[] asteroids, Blaster[] blasters) {
+        canvas.update(tiles, player, aliens, asteroids, blasters);
     }
     
 }
@@ -106,11 +107,13 @@ class Canvas extends JPanel {
     private BufferedImage apulsar;
     private BufferedImage ipulsar;
     private BufferedImage alien;
+    private BufferedImage fireBall;
     
     TileType[][] currentTiles;  //the current 2D array of tiles to display
     Player currentPlayer;       //the current player object to be drawn
     Alien[] currentAliens;   //the current array of monsters to draw
     Asteroid[] currentAsteroids;   //the current array of asteroids
+    Blaster[] currentBlasters;
     
     /**
      * Constructor that loads tile images for use in this class
@@ -154,6 +157,9 @@ class Canvas extends JPanel {
             alien = ImageIO.read(new File("assets/alien.png"));
             assert alien.getHeight() == GameGUI.TILE_HEIGHT &&
                     alien.getWidth() == GameGUI.TILE_WIDTH;
+            fireBall = ImageIO.read(new File("assets/fireBall.png"));
+            assert fireBall.getHeight() == GameGUI.TILE_HEIGHT &&
+                    fireBall.getWidth() == GameGUI.TILE_WIDTH;
         } catch (IOException e) {
             System.out.println("Exception loading images: " + e.getMessage());
             e.printStackTrace(System.out);
@@ -166,11 +172,12 @@ class Canvas extends JPanel {
      * @param player The current player object, used to draw the player and its health
      * @param mon The array of monsters to display them and their health
      */
-    public void update(TileType[][] t, Player player, Alien[] al, Asteroid[] as) {
+    public void update(TileType[][] t, Player player, Alien[] al, Asteroid[] as, Blaster[] bl) {
         currentTiles = t;
         currentPlayer = player;
         currentAliens = al;
         currentAsteroids = as;
+        currentBlasters = bl;
         repaint();
     }
     
@@ -231,6 +238,11 @@ class Canvas extends JPanel {
                 if (a != null) {
                     g2.drawImage(alien, a.getX() * GameGUI.TILE_WIDTH, a.getY() * GameGUI.TILE_HEIGHT, null);
                     drawHealthBar(g2, a);
+                }
+        if (currentBlasters != null)
+            for(Blaster bl : currentBlasters)
+                if (bl != null) {
+                    g2.drawImage(fireBall, bl.getX() * GameGUI.TILE_WIDTH, bl.getY() * GameGUI.TILE_HEIGHT, null);
                 }
         if (currentPlayer != null) {
             g2.drawImage(player, currentPlayer.getX() * GameGUI.TILE_WIDTH, currentPlayer.getY() * GameGUI.TILE_HEIGHT, null);
