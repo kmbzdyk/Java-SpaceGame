@@ -11,7 +11,7 @@ import java.util.Random;
 
 /**
  * The GameEngine class is responsible for managing information about the game,
- * creating levels, the player, aliens and asteroids, as well as updating
+ * creating levels, the player, aliens, blasters and asteroids, as well as updating
  * information when a key is pressed while the game is running.
  *
  * @author prtrundl & klaudiabzdyk
@@ -685,7 +685,7 @@ public class GameEngine {
         int playerX = player.getX();
         int playerY = player.getY();
         if (playerX > 0 && tiles[playerX - 1][playerY] != TileType.BLACK_HOLE) {
-            blasters[0] = new Blaster(playerX - 1, playerY, Asteroid.Direction.LEFT);
+            blasters[0] = new Blaster(playerX - 1, playerY, Asteroid.Direction.LEFT);   
         } 
         if (playerX < GRID_WIDTH - 1 && tiles[playerX + 1][playerY] != TileType.BLACK_HOLE) {
             blasters[1] = new Blaster(playerX + 1, playerY, Asteroid.Direction.RIGHT);
@@ -696,55 +696,45 @@ public class GameEngine {
         if (playerY > 0 && tiles[playerX][playerY - 1] != TileType.BLACK_HOLE) {
             blasters[3] = new Blaster(playerX, playerY - 1, Asteroid.Direction.UP);
         } 
-        for (Blaster blaster : blasters) {
-            if (blaster != null) {
-            }
-            
-        }
         return blasters;
     }
 
     private void moveBlasters() {
-        for (Blaster blaster : blasters) {
-            if (blaster != null) {
-                Asteroid.Direction bDirection = blaster.getBlasterDirection();
-                int blasterX = blaster.getX();
-                int blasterY = blaster.getY();
-                System.out.println(blasterX);
-                System.out.println(blasterY);
-                switch (bDirection) {
-                    case LEFT: if (blasterX > 0 && tiles[blasterX - 1][blasterY] != TileType.BLACK_HOLE) {
-                        blaster.setPosition(blasterX-1, blasterY);
+        int blasterX;
+        int blasterY;
+        for (int i = 0; i < blasters.length; i++) {
+            if (blasters[i] != null) {
+                blasterX = blasters[i].getX();
+                blasterY = blasters[i].getY();
+                if (blasters[i].getBlasterDirection() == Asteroid.Direction.LEFT) {
+                    if (blasterX > 0 && tiles[blasterX - 1][blasterY] != TileType.BLACK_HOLE) {
+                        blasters[i].setPosition(blasterX - 1, blasterY);
+                    } else {
+                        blasters[i] = null;
                     }
-                    else {
-                        blaster = null;
+                } else if (blasters[i].getBlasterDirection() == Asteroid.Direction.RIGHT) {
+                    if (blasterX < GRID_WIDTH - 1 && tiles[blasterX + 1][blasterY] != TileType.BLACK_HOLE) {
+                        blasters[i].setPosition(blasterX + 1, blasterY);
+                    } else {
+                        blasters[i] = null;
                     }
-                    break;
-                    case RIGHT: if (blasterX < GRID_WIDTH - 1 && tiles[blasterX + 1][blasterY] != TileType.BLACK_HOLE) {
-                        blaster.setPosition(blasterX + 1, blasterY);
+                } else if (blasters[i].getBlasterDirection() == Asteroid.Direction.UP) {
+                    if (blasterY > 0 && tiles[blasterX][blasterY + 1] != TileType.BLACK_HOLE) {
+                        blasters[i].setPosition(blasterX, blasterY - 1);
+                    } else {
+                        blasters[i] = null;
                     }
-                    else {
-                        blaster = null;
+                } else if (blasters[i].getBlasterDirection() == Asteroid.Direction.DOWN) {
+                    if (blasterY < GRID_HEIGHT - 1 && tiles[blasterX][blasterY - 1] != TileType.BLACK_HOLE) {
+                        blasters[i].setPosition(blasterX, blasterY + 1);
+                    } else {
+                        blasters[i] = null;
                     }
-                    break;
-                    case UP: if (blasterY > 0  && tiles[blasterX][blasterY + 1] != TileType.BLACK_HOLE) {
-                        blaster.setPosition(blasterX, blasterY - 1);
-                    }
-                    else {
-                        blaster = null;
-                    }
-                    break;
-                    case DOWN: if (blasterY < GRID_HEIGHT - 1 && tiles[blasterX][blasterY - 1] != TileType.BLACK_HOLE) {
-                        blaster.setPosition(blasterX, blasterY + 1);
-                    }
-                    else {
-                        blaster = null;
-                    }
-                    break;
-                }  
-                if (blaster != null) {
-                    blasterX = blaster.getX();
-                    blasterY = blaster.getY();
+                }
+
+                if (blasters[i] != null) {
+                    blasterX = blasters[i].getX();
+                    blasterY = blasters[i].getY();
                     for (Asteroid asteroid : asteroids) {
                         if (asteroid != null) {
                             if (asteroid.getX() == blasterX && asteroid.getY() == blasterY) {
@@ -754,21 +744,11 @@ public class GameEngine {
                             }
                         }
                     }
-                    for (Alien alien : aliens) {
-                        if (alien != null) {
-                            if (alien.getX() == blasterX && alien.getY() == blasterY) {
-                                if (alien.hullStrength > 5) {
-                                    alien.hullStrength -= 5;
-                                } else {
-                                    alien = null;
-                                }
-                            }
-                        }
-                    }
                 }
             }
         }
     }
+    
         /**
          * Called in response to the player collecting enough points win the
          * current level. The method increases the valued of cleared by one,
@@ -831,9 +811,8 @@ public class GameEngine {
             }
         }
         if (counter > 0) {
-                moveBlasters();
-                System.out.println("ruszyło się");
-            }
+            moveBlasters();
+        }
         if (points % 5 == 0 && blasterCheck == 5) {
             fireBlaster();
             blasterCheck++;
