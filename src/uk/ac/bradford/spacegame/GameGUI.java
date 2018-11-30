@@ -82,7 +82,9 @@ public class GameGUI extends JFrame {
      * @param asteroids An array of Asteroid objects that is processed to draw the
      * asteroids on the map. null elements in the array, or a null array are both
      * permitted, and any null arrays or null elements in the array will be skipped.
-     * @param blasters
+     * @param blasters An array of Blaster objects that is processed to draw 
+     * the blasters on the map. null elements in the array, or a null array are both
+     * permitted, and any null arrays or null elements in the array will be sipped.
      */
     public void updateDisplay(TileType[][] tiles, Player player, Alien[] aliens, Asteroid[] asteroids, Blaster[] blasters) {
         canvas.update(tiles, player, aliens, asteroids, blasters);
@@ -113,7 +115,7 @@ class Canvas extends JPanel {
     Player currentPlayer;       //the current player object to be drawn
     Alien[] currentAliens;   //the current array of monsters to draw
     Asteroid[] currentAsteroids;   //the current array of asteroids
-    Blaster[] currentBlasters;
+    Blaster[] currentBlasters; //the current array of blasters
     
     /**
      * Constructor that loads tile images for use in this class
@@ -171,6 +173,7 @@ class Canvas extends JPanel {
      * @param t The 2D array of TileTypes representing the current level of the dungeon
      * @param player The current player object, used to draw the player and its health
      * @param mon The array of monsters to display them and their health
+     * @param bl The array of Blaster objects to display them
      */
     public void update(TileType[][] t, Player player, Alien[] al, Asteroid[] as, Blaster[] bl) {
         currentTiles = t;
@@ -239,7 +242,7 @@ class Canvas extends JPanel {
                     g2.drawImage(alien, a.getX() * GameGUI.TILE_WIDTH, a.getY() * GameGUI.TILE_HEIGHT, null);
                     drawHealthBar(g2, a);
                 }
-        if (currentBlasters != null)
+        if (currentBlasters != null) 
             for(Blaster bl : currentBlasters)
                 if (bl != null) {
                     g2.drawImage(fireBall, bl.getX() * GameGUI.TILE_WIDTH, bl.getY() * GameGUI.TILE_HEIGHT, null);
