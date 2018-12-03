@@ -256,17 +256,29 @@ public class GameEngine {
      * level
      */
     private Alien[] spawnAliens() {
+        int aIndex = 0;
+        Point alienPoint = null;
         aliens = new Alien[getSpawns().size()];
         int counter = 0;
+        int counterForList = 0;
         for (int i = 0; i < getSpawns().size(); i++) {
             aliens[i] = null;
         }
         if (player != null) {
             int playerX = player.getX();
             int playerY = player.getY();
-            while (counter < aliens.length / 30) {
-                int aIndex = (int) (rng.nextDouble() * aliens.length);
-                Point alienPoint = getSpawns().get(aIndex);
+            int [] aliensYs = new int[cleared + 4];
+            while (counter < cleared + 4) {
+                int counter1 = 0;
+                while (counter1 < cleared + 4) {
+                    aIndex = (int) (rng.nextDouble() * aliens.length);
+                    alienPoint = getSpawns().get(aIndex);
+                    for (int i = 0; i < aliensYs.length; i++) {
+                        if (alienPoint.getY() != aliensYs[i]) {
+                            counter1++;
+                        }
+                    }
+                }
                 if (aliens[aIndex] == null) {
                     if (alienPoint.getX() != playerX || alienPoint.getY() != playerY) {
                         getSpawns().remove(aIndex);
@@ -275,7 +287,13 @@ public class GameEngine {
                         counter++;
                     }
                 }
+                aliensYs[counter - 1] =  (int) alienPoint.getX();  
             }
+            for (int i = 0; i < aliensYs.length; i++) {
+                System.out.println(aliensYs[i]);
+                
+            }
+    
         }
         return aliens;
     }
@@ -590,55 +608,33 @@ public class GameEngine {
         int alienX = a.getX();
         int alienY = a.getY();
         int counter = 0;
+        
+        
+        
+        
+        
               
-//            for (int i = 0; i < aliens.length; i++) {
-//                    if (aliens[i] != null) {
-//                        if (alienY != (aliens[i].getY() - 1) && alienY != (aliens[i].getX() + 1) && aliens[i].getX() != alienX) {
-//                            counter++;
-//                        }
-//                    }  
-//            }
-//        if (counter == aliens.length - 1) {
-//            boolean randomDir = rng.nextBoolean();
-//            if (randomDir) {
-//                if (alienY < GRID_HEIGHT - 1) { 
-//                    alienY++;
-//                }
-//                else {
-//                    alienY = 0;
-//                }
-//            }
-//            else {
-//                if (alienY > 0) {
-//                    alienY--;
-//                }
-//                else {
-//                    alienY = GRID_HEIGHT;
-//                }
-//            }
-//            if (alienX != playerX || alienY != playerY) {
-//                a.setPosition(alienX, alienY);
+
+
+        
+//        int dX = Math.abs(playerX - alienX);
+//        int dY = Math.abs(playerY - alienY);
+//        
+//        
+//        if (dX >= dY) {
+//            if (alienX < playerX - 1) {
+//                alienX++;
+//            } else if (alienX > playerX + 1) {
+//                alienX--;
 //            }
 //        }
-        
-        int dX = Math.abs(playerX - alienX);
-        int dY = Math.abs(playerY - alienY);
-        
-        
-        if (dX >= dY) {
-            if (alienX < playerX - 1) {
-                alienX++;
-            } else if (alienX > playerX + 1) {
-                alienX--;
-            }
-        }
-        else {
-            if (alienY < playerY - 1) {
-                alienY++;
-            } else if (alienY > playerY + 1) {
-                alienY--;
-            }
-        }
+//        else {
+//            if (alienY < playerY - 1) {
+//                alienY++;
+//            } else if (alienY > playerY + 1) {
+//                alienY--;
+//            }
+//        }
         
         if (alienX < playerX - 1) {
             alienX++;
@@ -650,14 +646,14 @@ public class GameEngine {
         } else if (alienY > playerY + 1) {
             alienY--;
         }
+        
+//        a.setPosition(alienX, alienY);
         for (int i = 0; i < aliens.length; i++) {
             if (aliens[i] != null) {
-                if (aliens[i].getX() == alienX && aliens[i].getY() == alienY ) {
-                   a.setPosition(alienX, alienY);
+                if (aliens[i].getX() != alienX || aliens[i].getY() != alienY ) {
+                    a.setPosition(alienX, alienY);
                 }
-                else {
-                   a.setPosition(alienX, alienY); 
-                }
+
             }
         }
         for (Asteroid asteroid : asteroids) {
