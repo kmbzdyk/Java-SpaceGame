@@ -11,16 +11,16 @@ import java.util.Random;
  * The Asteroid class extends the Entity class and adds a Direction enumeration
  * type and a single attribute to store a Direction value. Objects of this class
  * are used to store the position and movement direction of asteroids in the game.
- * @author prtrundl
+ * @author prtrundl & klaudiabzdyk
  */
 public class Asteroid extends Entity {
     
     /**
      * An enumeration type to represent the movement direction of an asteroid.
-     * Four directions, UP, DOWN, LEFT, RIGHT and NONE are permitted.
+     * Four directions, UP, DOWN, LEFT, RIGHT, UPRIGHT, UPLEFT, DOWNRIGHT, DOWNLEFT and NONE are permitted.
      */
     public enum Direction {
-        UP, DOWN, LEFT, RIGHT, NONE
+        UP, DOWN, LEFT, RIGHT, NONE, UPRIGHT, UPLEFT, DOWNRIGHT, DOWNLEFT
     }
     
     /**
@@ -30,7 +30,7 @@ public class Asteroid extends Entity {
     
     /**
      * Gets the direction value for this asteroid.
-     * @return UP, DOWN, LEFT, RIGHT or NONE depending on the movement direction
+     * @return UP, DOWN, LEFT, RIGHT, UPRIGHT, UPLEFT, DOWNRIGHT, DOWNLEFT or NONE depending on the movement direction
      * for this asteroid.
      */
     public Direction getMovementDirection() {
@@ -45,7 +45,7 @@ public class Asteroid extends Entity {
      * @param y The y co-ordinate for this asteroid
      */
     public Asteroid(int x, int y) {
-        this(x, y, Direction.values()[new Random().nextInt(Direction.values().length)]);
+        this(x, y, Direction.values()[new Random().nextInt(Direction.values().length-4)]);
     }
     
     /**
