@@ -8,6 +8,7 @@ package uk.ac.bradford.spacegame;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
+import java.lang.Math;
 
 /**
  * The GameEngine class is responsible for managing information about the game,
@@ -170,9 +171,7 @@ public class GameEngine {
          */
         for (int i = 0; i < tiles.length; i++) {
             for (int j = 0; j < tiles[i].length; j++) {
-                if (tiles[i][j] == null) {
                     tiles[i][j] = TileType.SPACE;
-                }
             }
         }
         /**
@@ -237,7 +236,7 @@ public class GameEngine {
     }
     
     private Blaster[] createBlastersList() {
-        blasters = new Blaster[4];
+        blasters = new Blaster[8];
         for (Blaster blaster : blasters) {
             blaster = null;
         }
@@ -265,7 +264,7 @@ public class GameEngine {
         if (player != null) {
             int playerX = player.getX();
             int playerY = player.getY();
-            while (counter < aliens.length / 10) {
+            while (counter < aliens.length / 30) {
                 int aIndex = (int) (rng.nextDouble() * aliens.length);
                 Point alienPoint = getSpawns().get(aIndex);
                 if (aliens[aIndex] == null) {
@@ -319,7 +318,6 @@ public class GameEngine {
                     points++;
                     blasterCheck++;
                 }
-
             }
         } else if ((playerX - 1) == -1 && tiles[GRID_WIDTH - 1][playerY] != TileType.BLACK_HOLE) {
             player.setPosition(GRID_WIDTH - 1, playerY);
@@ -329,7 +327,6 @@ public class GameEngine {
                     points++;
                     blasterCheck++;
                 }
-
             }
         } else {
             if (points > 0) {
@@ -337,7 +334,16 @@ public class GameEngine {
                 blasterCheck--;
             }
         }
-
+        for (int i = 0; i < aliens.length; i++) {
+            if ((aliens[i] != null && aliens[i].getX() == playerX) && (aliens[i].getY() == playerY)) {
+                if (player.hullStrength > 30) {
+                    player.hullStrength -= 30;
+                } 
+                else {
+                    player.hullStrength = 0;
+                }
+            }
+        }
     }
 
     /**
@@ -377,6 +383,16 @@ public class GameEngine {
             if (points > 0) {
                 points--;
                 blasterCheck--;
+            }
+        }
+        for (int i = 0; i < aliens.length; i++) {
+            if ((aliens[i] != null && aliens[i].getX() == playerX) && (aliens[i].getY() == playerY)) {
+                if (player.hullStrength > 30) {
+                    player.hullStrength -= 30;
+                } 
+                else {
+                    player.hullStrength = 0;
+                }
             }
         }
 
@@ -421,6 +437,16 @@ public class GameEngine {
                 blasterCheck--;
             }
         }
+        for (int i = 0; i < aliens.length; i++) {
+            if ((aliens[i] != null && aliens[i].getX() == playerX) && (aliens[i].getY() == playerY)) {
+                if (player.hullStrength > 30) {
+                    player.hullStrength -= 30;
+                } 
+                else {
+                    player.hullStrength = 0;
+                }
+            }
+        }
 
     }
 
@@ -461,6 +487,16 @@ public class GameEngine {
             if (points > 0) {
                 points--;
                 blasterCheck--;
+            }
+        }
+        for (int i = 0; i < aliens.length; i++) {
+            if ((aliens[i] != null && aliens[i].getX() == playerX) && (aliens[i].getY() == playerY)) {
+                if (player.hullStrength > 30) {
+                    player.hullStrength -= 30;
+                } 
+                else {
+                    player.hullStrength = 0;
+                }
             }
         }
 
@@ -551,11 +587,62 @@ public class GameEngine {
     private void moveAlien(Alien a) {
         int playerX = player.getX();
         int playerY = player.getY();
-        int alienX = (int) a.getX();
-        int alienY = (int) a.getY();
+        int alienX = a.getX();
+        int alienY = a.getY();
+        int counter = 0;
+              
+//            for (int i = 0; i < aliens.length; i++) {
+//                    if (aliens[i] != null) {
+//                        if (alienY != (aliens[i].getY() - 1) && alienY != (aliens[i].getX() + 1) && aliens[i].getX() != alienX) {
+//                            counter++;
+//                        }
+//                    }  
+//            }
+//        if (counter == aliens.length - 1) {
+//            boolean randomDir = rng.nextBoolean();
+//            if (randomDir) {
+//                if (alienY < GRID_HEIGHT - 1) { 
+//                    alienY++;
+//                }
+//                else {
+//                    alienY = 0;
+//                }
+//            }
+//            else {
+//                if (alienY > 0) {
+//                    alienY--;
+//                }
+//                else {
+//                    alienY = GRID_HEIGHT;
+//                }
+//            }
+//            if (alienX != playerX || alienY != playerY) {
+//                a.setPosition(alienX, alienY);
+//            }
+//        }
+        
+        int dX = Math.abs(playerX - alienX);
+        int dY = Math.abs(playerY - alienY);
+        
+        
+        if (dX >= dY) {
+            if (alienX < playerX - 1) {
+                alienX++;
+            } else if (alienX > playerX + 1) {
+                alienX--;
+            }
+        }
+        else {
+            if (alienY < playerY - 1) {
+                alienY++;
+            } else if (alienY > playerY + 1) {
+                alienY--;
+            }
+        }
+        
         if (alienX < playerX - 1) {
             alienX++;
-        } else if (playerX > playerX + 1) {
+        } else if (alienX > playerX + 1) {
             alienX--;
         }
         if (alienY < playerY - 1) {
@@ -563,16 +650,19 @@ public class GameEngine {
         } else if (alienY > playerY + 1) {
             alienY--;
         }
-        for (Alien eachAlien : aliens) {
-            if (eachAlien != null) {
-                if (eachAlien.getX() != alienX || eachAlien.getY() != alienY) {
-                    a.setPosition(alienX, alienY);
+        for (int i = 0; i < aliens.length; i++) {
+            if (aliens[i] != null) {
+                if (aliens[i].getX() == alienX && aliens[i].getY() == alienY ) {
+                   a.setPosition(alienX, alienY);
+                }
+                else {
+                   a.setPosition(alienX, alienY); 
                 }
             }
         }
         for (Asteroid asteroid : asteroids) {
             if (asteroid != null && asteroid.getX() == alienX && asteroid.getY() == alienY) {
-                int counter = 0;
+                counter = 0;
                 while (counter < 1) {
                     int randomIndex = (int) (rng.nextDouble() * getSpawns().size() - 1);
                     Point point = getSpawns().get(randomIndex);
@@ -580,10 +670,12 @@ public class GameEngine {
                     int pointY = (int) point.getY();
                     if (pointX != playerX || pointY != playerY) {
                         asteroid.setPosition(pointX, pointY);
+                        if (a.hullStrength < a.maxHull - 10) {
+                            a.hullStrength += 10;
+                        } else {
+                            a.hullStrength = a.maxHull;
+                        }
                         counter++;
-                    }
-                    if (a.hullStrength < a.maxHull - 5) {
-                        a.hullStrength += 5;
                     }
                 }
             }
@@ -681,7 +773,7 @@ public class GameEngine {
         }
     }
 
-    private Blaster[] fireBlaster() {
+    public Blaster[] fireBlaster() {
         int playerX = player.getX();
         int playerY = player.getY();
         if (playerX > 0 && tiles[playerX - 1][playerY] != TileType.BLACK_HOLE) {
@@ -696,6 +788,18 @@ public class GameEngine {
         if (playerY > 0 && tiles[playerX][playerY - 1] != TileType.BLACK_HOLE) {
             blasters[3] = new Blaster(playerX, playerY - 1, Asteroid.Direction.UP);
         } 
+        if (playerX < GRID_WIDTH - 1 && playerY > 0 && tiles[playerX + 1][playerY - 1] != TileType.BLACK_HOLE) {
+            blasters[4] = new Blaster(playerX + 1, playerY - 1, Asteroid.Direction.UPRIGHT);
+        }
+        if (playerX > 0 && playerY > 0 && tiles[playerX - 1][playerY - 1] != TileType.BLACK_HOLE) {
+            blasters[5] = new Blaster(playerX - 1, playerY - 1, Asteroid.Direction.UPLEFT);
+        }
+        if (playerX < GRID_WIDTH - 1 && playerY < GRID_HEIGHT - 1 && tiles[playerX + 1][playerY + 1] != TileType.BLACK_HOLE) {
+            blasters[6] = new Blaster(playerX + 1, playerY + 1, Asteroid.Direction.DOWNRIGHT);
+        }
+        if (playerX > 0 && playerY > 0 && playerY < GRID_HEIGHT - 1 && tiles[playerX - 1][playerY + 1] != TileType.BLACK_HOLE) {
+            blasters[7] = new Blaster(playerX - 1, playerY + 1, Asteroid.Direction.DOWNLEFT);
+        }
         return blasters;
     }
 
@@ -718,16 +822,51 @@ public class GameEngine {
                     } else {
                         blasters[i] = null;
                     }
-                } else if (blasters[i].getBlasterDirection() == Asteroid.Direction.UP) {
-                    if (blasterY > 0 && tiles[blasterX][blasterY + 1] != TileType.BLACK_HOLE) {
+                } 
+                else if (blasters[i].getBlasterDirection() == Asteroid.Direction.UP) {
+                    if (blasterY > 0 && tiles[blasterX][blasterY - 1] != TileType.BLACK_HOLE) {
                         blasters[i].setPosition(blasterX, blasterY - 1);
                     } else {
                         blasters[i] = null;
                     }
-                } else if (blasters[i].getBlasterDirection() == Asteroid.Direction.DOWN) {
-                    if (blasterY < GRID_HEIGHT - 1 && tiles[blasterX][blasterY - 1] != TileType.BLACK_HOLE) {
+                } 
+                else if (blasters[i].getBlasterDirection() == Asteroid.Direction.DOWN) {
+                    if (blasterY < GRID_HEIGHT - 1 && tiles[blasterX][blasterY + 1] != TileType.BLACK_HOLE) {
                         blasters[i].setPosition(blasterX, blasterY + 1);
-                    } else {
+                    } 
+                    else {
+                        blasters[i] = null;
+                    }
+                }
+                else if (blasters[i].getBlasterDirection() == Asteroid.Direction.UPRIGHT) {
+                    if (blasterX < GRID_WIDTH - 1 && blasterY > 0 && tiles[blasterX + 1][blasterY - 1] != TileType.BLACK_HOLE) {
+                        blasters[i].setPosition(blasterX + 1, blasterY - 1);
+                    }
+                    else {
+                        blasters[i] = null;
+                    }
+                }
+                else if (blasters[i].getBlasterDirection() == Asteroid.Direction.UPLEFT) {
+                    if (blasterX > 0 && blasterY > 0 && tiles[blasterX - 1][blasterY - 1] != TileType.BLACK_HOLE) {
+                        blasters[i].setPosition(blasterX - 1, blasterY - 1);
+                    }
+                    else {
+                        blasters[i] = null;
+                    }
+                }
+                else if (blasters[i].getBlasterDirection() == Asteroid.Direction.DOWNRIGHT) {
+                    if (blasterX < GRID_WIDTH - 1 && blasterY < GRID_HEIGHT - 1 && tiles[blasterX + 1][blasterY + 1] != TileType.BLACK_HOLE) {
+                        blasters[i].setPosition(blasterX + 1, blasterY + 1);
+                    }
+                    else {
+                        blasters[i] = null;
+                    }
+                }
+                else if (blasters[i].getBlasterDirection() == Asteroid.Direction.DOWNLEFT) {
+                    if (blasterX > 0 && blasterY > 0 && blasterY < GRID_HEIGHT - 1 && tiles[blasterX - 1][blasterY + 1] != TileType.BLACK_HOLE) {
+                        blasters[i].setPosition(blasterX - 1, blasterY + 1);
+                    }
+                    else {
                         blasters[i] = null;
                     }
                 }
@@ -741,6 +880,17 @@ public class GameEngine {
                                 asteroid = null;
                                 points++;
                                 blasterCheck++;
+                            }
+                        }
+                    }
+                    for (Alien alien : aliens) {
+                        if (alien != null) {
+                            if (alien.getX() == blasterX && alien.getY() == blasterY) {
+                                if (alien.hullStrength > 29) {
+                                    alien.hullStrength -= 30;
+                                } else {
+                                    alien.hullStrength = 0;
+                                }
                             }
                         }
                     }
@@ -761,15 +911,15 @@ public class GameEngine {
          */
     private void newLevel() {
         cleared++;
-        BLACK_HOLE_CHANCE += cleared / 2;
-        PULSAR_CHANCE += cleared / 2;
+        BLACK_HOLE_CHANCE += 0.01;
+        PULSAR_CHANCE += 0.01;
         points = 0;
         blasterCheck = 0;
         generateLevel();
         getSpawns();
         spawnAliens();
         spawnAsteroids();
-        placePlayer();
+        spawnPlayer(); //uwaga tu było placePlayer
         createBlastersList();
 
     }
@@ -795,7 +945,6 @@ public class GameEngine {
      * level.
      */
     public void doTurn() {
-        int counter = 0;
         if (turnNumber % 20 == 0) {
             activatePulsars();
         }
@@ -805,28 +954,23 @@ public class GameEngine {
         if (turnNumber % 10 == 5) {
             moveAsteroids();
         }
-        for (Blaster blaster : blasters) {
-            if (blaster != null) {
-                counter++;
-            }
-        }
-        if (counter > 0) {
-            moveBlasters();
-        }
+        moveBlasters();
         if (points % 5 == 0 && blasterCheck == 5) {
             fireBlaster();
             blasterCheck++;
         }                   
         moveAliens();
-        pulsarDamage();
         if (player.getHullStrength() < 1) {
             System.exit(0);
         }
-        if (points >= 10) {
+        pulsarDamage();
+        if (cleared < 10 && points >= 5) {
             newLevel();
         }
         gui.updateDisplay(tiles, player, aliens, asteroids, blasters);
         turnNumber++;
+        System.out.println(points);
+        System.out.println(cleared);
     }
 
     /**
