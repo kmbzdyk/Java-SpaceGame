@@ -39,7 +39,7 @@ public class Asteroid extends Entity {
     
     /**
      * Creates an asteroid object with a random Direction value chosen uniformly
-     * from all permitted values and a position specified by the two integer
+     * from the first five values and a position specified by the two integer
      * values passed to this constructor.
      * @param x The x co-ordinate for this asteroid
      * @param y The y co-ordinate for this asteroid
