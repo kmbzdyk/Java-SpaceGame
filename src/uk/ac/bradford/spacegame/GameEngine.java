@@ -80,6 +80,8 @@ public class GameEngine {
 
     private int blasterCheck = 0;
     
+    Point[] tilesForAliensMove;
+    
     /**
      * Tracks the current turn number. Used to control pulsar activation and
      * asteroid movement.
@@ -269,52 +271,47 @@ public class GameEngine {
      */
     private Alien[] spawnAliens() {
         int removeY;
-        int aIndex = 0;
+        int randomIndex = 0;
         Point alienPoint = null;
         aliens = new Alien[getSpawns().size()];
         int counter = 0;
+        Point[] tilesForAliens = new Point[getSpawns().size()];
         for (int i = 0; i < getSpawns().size(); i++) {
             aliens[i] = null;
+            tilesForAliens[i] = getSpawns().get(i);
         }
+        
 
         while (counter < cleared + 4) {
-            aIndex = rng.nextInt(getSpawns().size() - 1);
-            alienPoint = getSpawns().get(aIndex);
+            randomIndex = rng.nextInt(tilesForAliens.length);
+            alienPoint = tilesForAliens[randomIndex];
             if (player != null) {
                 int playerX = player.getX();
                 int playerY = player.getY();
-                if (aliens[aIndex] == null) {
+                if (aliens[randomIndex] == null && alienPoint != null) {
                     if (alienPoint.getX() != playerX || alienPoint.getY() != playerY) {
                         removeY = (int) alienPoint.getY();
-//                        for (int i = 0; i < getSpawns().size(); i++) {
-//                            System.out.println(getSpawns().get(i));
-//                            
-//                        }
 //                        System.out.println(removeY);
-                        for (int i = 0; i < getSpawns().size(); i++) {
-                            Point spawn = getSpawns().get(i);
+                        for (int i = 0; i < tilesForAliens.length; i++) {
+                            if (tilesForAliens[i] != null) {
+                            Point spawn = tilesForAliens[i];
                             int spawnY = (int) spawn.getY();
                             if (spawnY == removeY) {
-                                getSpawns().remove(i);
+                                tilesForAliens[i] = null;
+                            }
                             }
                         }
-//                        for (int i = 0; i < getSpawns().size(); i++) {
-//                            System.out.println(getSpawns().get(i));
+//                        for (int i = 0; i < tilesForAliens.length; i++) {
+//                            System.out.println(tilesForAliens[i]);
 //                            
 //                        }
                         Alien newAlien = new Alien(50, (int) alienPoint.getX(), (int) alienPoint.getY());
-                        aliens[aIndex] = newAlien;
+                        aliens[randomIndex] = newAlien;
                         counter++;
                     }
                 }
             }
         }
-        for (int i = 0; i < aliens.length; i++) {
-            if (aliens[i] != null){
-            System.out.println(aliens[i].getY());
-            }
-        }
-
         return aliens;
     }
 
@@ -610,9 +607,18 @@ public class GameEngine {
      * that is not null.
      */
     private void moveAliens() {
+//        tilesForAliensMove = new Point[getSpawns().size()];
+//        for (int i = 0; i < getSpawns().size(); i++) {
+//            tilesForAliensMove[i] = getSpawns().get(i);
+//            System.out.println(tilesForAliensMove[i]);
+//        }
         for (Alien newAlien : aliens) {
             if (newAlien != null) {
                 moveAlien(newAlien);
+//                for (int i = 0; i < tilesForAliensMove.length; i++) {
+//            System.out.println(tilesForAliensMove[i]);
+//            
+//        }
             }
         }
     }
@@ -631,33 +637,18 @@ public class GameEngine {
         int counter = 0;
         boolean randomDirection = rng.nextBoolean();
         
-        if (randomDirection == true && alienY < GRID_HEIGHT - 1) {
-            alienY++;
-            for (int i = 0; i < aliens.length; i++) {
-                if (aliens[i] != null) {
-                    int aY = aliens[i].getY();
-                    if (aY != alienY && aY + 1 != alienY && aY - 1 != alienY) {
-                        counter++;
-                    }
+        if (randomDirection == true && alienX < GRID_WIDTH - 1) {
+            alienX++;
+                if (alienX != playerX || alienY != playerY && tiles[alienX][alienY] != TileType.BLACK_HOLE) {
+
+                        a.setPosition(alienX, alienY);
                 }
-            }
-            if (counter == aliens.length - 1 && alienX != playerX || alienY != playerY && tiles[alienX][alienY] != TileType.BLACK_HOLE) {
-                a.setPosition(alienX, alienY);
-            }
         }
-        else if (alienY > 0) {
-            alienY--;
-            for (int i = 0; i < aliens.length; i++) {
-                if (aliens[i] != null) {
-                    int aY = aliens[i].getY();
-                    if (aY != alienY && aY + 1 != alienY && aY - 1 != alienY) {          
-                        counter++;
-                    }
+        else if (alienX > 0) {
+            alienX--;
+                if (alienX != playerX || alienY != playerY && tiles[alienX][alienY] != TileType.BLACK_HOLE) {
+                        a.setPosition(alienX, alienY);
                 }
-            }
-            if (counter == aliens.length - 1 && alienX != playerX || alienY != playerY && tiles[alienX][alienY] != TileType.BLACK_HOLE) {
-                a.setPosition(alienX, alienY);
-            }
         }
 
      
