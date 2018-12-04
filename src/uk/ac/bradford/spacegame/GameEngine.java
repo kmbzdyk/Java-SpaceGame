@@ -8,7 +8,6 @@ package uk.ac.bradford.spacegame;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Random;
-import java.lang.Math;
 
 /**
  * The GameEngine class is responsible for managing information about the game,
@@ -95,7 +94,7 @@ public class GameEngine {
 
     /**
      * The 2 dimensional array of tiles the represent the current level. The
-     * size of this array should use the GRID_HEIGHT and GRID_WIDTH attributes
+     * size of this array uses the GRID_HEIGHT and GRID_WIDTH attributes
      * when it is created.
      */
     private TileType[][] tiles;
@@ -116,7 +115,7 @@ public class GameEngine {
 
     /**
      * An array of Alien objects that represents the aliens in the current
-     * level. Elements in this array should be of the type Alien, meaning that
+     * level. Elements in this array are of the type Alien, meaning that
      * an alien is alive and needs to be drawn or moved, or should be null which
      * means nothing is drawn or processed for movement. Null values in this
      * array are skipped during drawing and movement processing.
@@ -125,13 +124,20 @@ public class GameEngine {
 
     /**
      * An array of Asteroid objects that represents the asteroids in the current
-     * level. Elements in this array should be of the type Asteroid, meaning
+     * level. Elements in this array are of the type Asteroid, meaning
      * that an asteroid exists and needs to be drawn or moved, or should be null
      * which means nothing is drawn or processed for movement. Null values in
      * this array are skipped during drawing and movement processing.
      */
     private Asteroid[] asteroids;
-
+    
+    /**
+     * An array of Blaster objects that represents the blusters in the current
+     * level. Elements in this array are of the type Blaster, meaning
+     * that an blaster exists and needs to be drawn or moved, or should be null
+     * which means nothing is drawn or processed for movement. Null values in
+     * this array are skipped during drawing and movement processing.
+     */
     private Blaster[] blasters;
 
     /**
@@ -150,9 +156,7 @@ public class GameEngine {
      * Generates a new level. The method builds a 2D array of TileTypes that
      * will be used to draw tiles to the screen and to add a variety of elements
      * into each level. Tiles can be space, black holes, active pulsars or
-     * inactive pulsars. This method should contain the implementation of an
-     * algorithm to create an interesting and varied level each time it is
-     * called.
+     * inactive pulsars. 
      *
      * @return A 2D array of TileTypes representing the tiles in the current
      * level of the dungeon. The size of this array uses the width and height
@@ -175,14 +179,16 @@ public class GameEngine {
             }
         }
         /**
-         * while loop which creates black holes in random places of the tiles
-         * array numberOfBHoles times
+         * loop for black holes which take random number for width and random for
+         * height for tiles and check if that tale is space, if no loop search
+         * another tale, if yes loop puts black hole here, loop is executed
+         * numberOfBHoles times
          */
         counter = 0;
         while (counter < numberOfBHoles) {
             randomIndex = (int) (rng.nextDouble() * GRID_WIDTH - 1);
             randomSecIndex = (int) (rng.nextDouble() * GRID_HEIGHT - 1);
-            if (tiles[randomIndex][randomSecIndex] != TileType.PULSAR_INACTIVE && tiles[randomIndex][randomSecIndex] != TileType.PULSAR_ACTIVE && tiles[randomIndex][randomSecIndex] != TileType.BLACK_HOLE) {
+            if (tiles[randomIndex][randomSecIndex] == TileType.SPACE) {
                 tiles[randomIndex][randomSecIndex] = TileType.BLACK_HOLE;
                 counter++;
             }
@@ -193,12 +199,13 @@ public class GameEngine {
          * height for tiles and check if that tale is space, if no loop search
          * another tale, if yes loop puts pulsar here, loop is executed
          * numberOfPulsars times
+         * number of active and inactive pulsars is random
          */
         counter = 0;
         while (counter < numberOfPulsars) {
             randomIndex = (int) (rng.nextDouble() * GRID_WIDTH - 1);
             randomSecIndex = (int) (rng.nextDouble() * GRID_HEIGHT - 1);
-            if (tiles[randomIndex][randomSecIndex] != TileType.PULSAR_ACTIVE && tiles[randomIndex][randomSecIndex] != TileType.BLACK_HOLE && tiles[randomIndex][randomSecIndex] != TileType.PULSAR_INACTIVE) {
+            if (tiles[randomIndex][randomSecIndex] == TileType.SPACE) {
                 if (rng.nextBoolean() == true) {
                     tiles[randomIndex][randomSecIndex] = TileType.PULSAR_ACTIVE;
                     counter++;
@@ -214,7 +221,7 @@ public class GameEngine {
     /**
      * Generates spawn points for entities. The method processes the tiles array
      * and finds tiles that are suitable for spawning, i.e. space tiles.
-     * Suitable tiles should be added to the ArrayList that will be returned as
+     * Suitable tiles are added to the ArrayList that will be returned as
      * Point objects - Points are a simple kind of object that contain an X and
      * a Y co-ordinate stored using the int primitive type.
      *
@@ -235,6 +242,11 @@ public class GameEngine {
         return spawns;
     }
     
+    /**
+     * Creates array of Blaster type objects (of size 8) and sets each
+     * of them to null.
+     * @return An array of Blaster objects
+     */
     private Blaster[] createBlastersList() {
         blasters = new Blaster[8];
         for (Blaster blaster : blasters) {
@@ -256,45 +268,53 @@ public class GameEngine {
      * level
      */
     private Alien[] spawnAliens() {
+        int removeY;
         int aIndex = 0;
         Point alienPoint = null;
         aliens = new Alien[getSpawns().size()];
         int counter = 0;
-        int counterForList = 0;
         for (int i = 0; i < getSpawns().size(); i++) {
             aliens[i] = null;
         }
-        if (player != null) {
-            int playerX = player.getX();
-            int playerY = player.getY();
-            int [] aliensYs = new int[cleared + 4];
-            while (counter < cleared + 4) {
-                int counter1 = 0;
-                while (counter1 < cleared + 4) {
-                    aIndex = (int) (rng.nextDouble() * aliens.length);
-                    alienPoint = getSpawns().get(aIndex);
-                    for (int i = 0; i < aliensYs.length; i++) {
-                        if (alienPoint.getY() != aliensYs[i]) {
-                            counter1++;
-                        }
-                    }
-                }
+
+        while (counter < cleared + 4) {
+            aIndex = rng.nextInt(getSpawns().size() - 1);
+            alienPoint = getSpawns().get(aIndex);
+            if (player != null) {
+                int playerX = player.getX();
+                int playerY = player.getY();
                 if (aliens[aIndex] == null) {
                     if (alienPoint.getX() != playerX || alienPoint.getY() != playerY) {
-                        getSpawns().remove(aIndex);
+                        removeY = (int) alienPoint.getY();
+//                        for (int i = 0; i < getSpawns().size(); i++) {
+//                            System.out.println(getSpawns().get(i));
+//                            
+//                        }
+//                        System.out.println(removeY);
+                        for (int i = 0; i < getSpawns().size(); i++) {
+                            Point spawn = getSpawns().get(i);
+                            int spawnY = (int) spawn.getY();
+                            if (spawnY == removeY) {
+                                getSpawns().remove(i);
+                            }
+                        }
+//                        for (int i = 0; i < getSpawns().size(); i++) {
+//                            System.out.println(getSpawns().get(i));
+//                            
+//                        }
                         Alien newAlien = new Alien(50, (int) alienPoint.getX(), (int) alienPoint.getY());
                         aliens[aIndex] = newAlien;
                         counter++;
                     }
                 }
-                aliensYs[counter - 1] =  (int) alienPoint.getX();  
             }
-            for (int i = 0; i < aliensYs.length; i++) {
-                System.out.println(aliensYs[i]);
-                
-            }
-    
         }
+        for (int i = 0; i < aliens.length; i++) {
+            if (aliens[i] != null){
+            System.out.println(aliens[i].getY());
+            }
+        }
+
         return aliens;
     }
 
@@ -307,10 +327,11 @@ public class GameEngine {
      * @return A Player object representing the player in the game
      */
     private Player spawnPlayer() {
-        int randomTale = (int) (rng.nextDouble() * getSpawns().size());
+        int randomTale = rng.nextInt(getSpawns().size());
         Point xPoint = getSpawns().get(randomTale);
         double x = xPoint.getX();
         double y = xPoint.getY();
+        getSpawns().remove(randomTale);
         player = new Player(100, (int) x, (int) y);
         return player;
     }
@@ -322,7 +343,7 @@ public class GameEngine {
      * tile to the left of the player is empty for movement and if it is updates
      * the player object's X and Y locations with the new position. If the tile
      * to the left of the player is not empty the method will not update the
-     * player position, but could make other changes to the game.
+     * player position.
      */
     public void movePlayerLeft() {
         int playerX = player.getX();
@@ -334,7 +355,7 @@ public class GameEngine {
                 if ((asteroids[i] != null && asteroids[i].getX() == playerX) && (asteroids[i].getY() == playerY)) {
                     asteroids[i] = null;
                     points++;
-                    blasterCheck++;
+                 //   blasterCheck++;
                 }
             }
         } else if ((playerX - 1) == -1 && tiles[GRID_WIDTH - 1][playerY] != TileType.BLACK_HOLE) {
@@ -343,13 +364,13 @@ public class GameEngine {
                 if (asteroids[i] != null && asteroids[i].getX() == GRID_WIDTH - 1 && asteroids[i].getY() == playerY) {
                     asteroids[i] = null;
                     points++;
-                    blasterCheck++;
+                 //   blasterCheck++;
                 }
             }
         } else {
             if (points > 0) {
                 points--;
-                blasterCheck--;
+              //  blasterCheck--;
             }
         }
         for (int i = 0; i < aliens.length; i++) {
@@ -369,9 +390,9 @@ public class GameEngine {
      * game. This method is called by the InputHandler class when the user has
      * pressed the right arrow key on the keyboard. The method checks whether
      * the tile to the right of the player is empty for movement and if it is
-     * updates the player object's X and Y locations with the new position. If
-     * the tile to the right of the player is not empty the method will not
-     * update the player position, but could make other changes to the game.
+     * updates the player object's X and Y locations with the new position. 
+     * If the tile to the left of the player is not empty the method will not update the
+     * player position.
      */
     public void movePlayerRight() {
         int playerX = player.getX();
@@ -383,7 +404,7 @@ public class GameEngine {
                 if (asteroids[i] != null && asteroids[i].getX() == playerX && asteroids[i].getY() == playerY) {
                     asteroids[i] = null;
                     points++;
-                    blasterCheck++;
+                  //  blasterCheck++;
                 }
 
             }
@@ -393,14 +414,14 @@ public class GameEngine {
                 if (asteroids[i] != null && asteroids[i].getX() == 0 && asteroids[i].getY() == playerY) {
                     asteroids[i] = null;
                     points++;
-                    blasterCheck++;
+                  //  blasterCheck++;
                 }
 
             }
         } else {
             if (points > 0) {
                 points--;
-                blasterCheck--;
+              //  blasterCheck--;
             }
         }
         for (int i = 0; i < aliens.length; i++) {
@@ -421,9 +442,9 @@ public class GameEngine {
      * game. This method is called by the InputHandler class when the user has
      * pressed the up arrow key on the keyboard. The method checks whether the
      * tile above the player is empty for movement and if it is updates the
-     * player object's X and Y locations with the new position. If the tile
-     * above the player is not empty the method will not update the player
-     * position, but could make other changes to the game.
+     * player object's X and Y locations with the new position. 
+     * If the tile to the left of the player is not empty the method will not update the
+     * player position.
      */
     public void movePlayerUp() {
         int playerX = player.getX();
@@ -435,7 +456,7 @@ public class GameEngine {
                 if (asteroids[i] != null && asteroids[i].getX() == playerX && asteroids[i].getY() == playerY) {
                     asteroids[i] = null;
                     points++;
-                    blasterCheck++;
+                //    blasterCheck++;
                 }
 
             }
@@ -445,18 +466,18 @@ public class GameEngine {
                 if (asteroids[i] != null && asteroids[i].getX() == playerX && asteroids[i].getY() == GRID_HEIGHT - 1) {
                     asteroids[i] = null;
                     points++;
-                    blasterCheck++;
+                  //  blasterCheck++;
                 }
 
             }
         } else {
             if (points > 0) {
                 points--;
-                blasterCheck--;
+              //  blasterCheck--;
             }
         }
         for (int i = 0; i < aliens.length; i++) {
-            if ((aliens[i] != null && aliens[i].getX() == playerX) && (aliens[i].getY() == playerY)) {
+            if (aliens[i] != null && aliens[i].getX() == playerX && aliens[i].getY() == playerY) {
                 if (player.hullStrength > 30) {
                     player.hullStrength -= 30;
                 } 
@@ -473,9 +494,9 @@ public class GameEngine {
      * game. This method is called by the InputHandler class when the user has
      * pressed the down arrow key on the keyboard. The method checks whether the
      * tile below the player is empty for movement and if it is updates the
-     * player object's X and Y locations with the new position. If the tile
-     * below the player is not empty the method will not update the player
-     * position, but could make other changes to the game.
+     * player object's X and Y locations with the new position. 
+     * If the tile to the left of the player is not empty the method will not update the
+     * player position.
      */
     public void movePlayerDown() {
         int playerX = player.getX();
@@ -487,7 +508,7 @@ public class GameEngine {
                 if (asteroids[i] != null && asteroids[i].getX() == playerX && asteroids[i].getY() == playerY) {
                     asteroids[i] = null;
                     points++;
-                    blasterCheck++;
+             //       blasterCheck++;
                 }
 
             }
@@ -497,14 +518,14 @@ public class GameEngine {
                 if (asteroids[i] != null && asteroids[i].getX() == playerX && asteroids[i].getY() == 0) {
                     asteroids[i] = null;
                     points++;
-                    blasterCheck++;
+             //       blasterCheck++;
                 }
 
             }
         } else {
             if (points > 0) {
                 points--;
-                blasterCheck--;
+             //   blasterCheck--;
             }
         }
         for (int i = 0; i < aliens.length; i++) {
@@ -526,9 +547,9 @@ public class GameEngine {
      * iterates over the asteroids array one element at a time, checks if the
      * current element is null (skipping it if it is null) and finding the
      * moveDirection value for the current asteroid object. Asteroids with a
-     * moveDirection value other than NONE should have their position updated
+     * moveDirection value other than NONE have their position updated
      * accordingly, and if their new position puts them outside the map or
-     * inside a black hole they are "destroyed". Destroyed asteroids should be
+     * inside a black hole they are "destroyed". Destroyed asteroids are
      * replaced by creating a new, randomly positioned asteroid in the same
      * index of the asteroids array that the destroyed asteroid used to occupy.
      */
@@ -608,54 +629,38 @@ public class GameEngine {
         int alienX = a.getX();
         int alienY = a.getY();
         int counter = 0;
+        boolean randomDirection = rng.nextBoolean();
         
-        
-        
-        
-        
-              
-
-
-        
-//        int dX = Math.abs(playerX - alienX);
-//        int dY = Math.abs(playerY - alienY);
-//        
-//        
-//        if (dX >= dY) {
-//            if (alienX < playerX - 1) {
-//                alienX++;
-//            } else if (alienX > playerX + 1) {
-//                alienX--;
-//            }
-//        }
-//        else {
-//            if (alienY < playerY - 1) {
-//                alienY++;
-//            } else if (alienY > playerY + 1) {
-//                alienY--;
-//            }
-//        }
-        
-        if (alienX < playerX - 1) {
-            alienX++;
-        } else if (alienX > playerX + 1) {
-            alienX--;
-        }
-        if (alienY < playerY - 1) {
+        if (randomDirection == true && alienY < GRID_HEIGHT - 1) {
             alienY++;
-        } else if (alienY > playerY + 1) {
-            alienY--;
-        }
-        
-//        a.setPosition(alienX, alienY);
-        for (int i = 0; i < aliens.length; i++) {
-            if (aliens[i] != null) {
-                if (aliens[i].getX() != alienX || aliens[i].getY() != alienY ) {
-                    a.setPosition(alienX, alienY);
+            for (int i = 0; i < aliens.length; i++) {
+                if (aliens[i] != null) {
+                    int aY = aliens[i].getY();
+                    if (aY != alienY && aY + 1 != alienY && aY - 1 != alienY) {
+                        counter++;
+                    }
                 }
-
+            }
+            if (counter == aliens.length - 1 && alienX != playerX || alienY != playerY && tiles[alienX][alienY] != TileType.BLACK_HOLE) {
+                a.setPosition(alienX, alienY);
             }
         }
+        else if (alienY > 0) {
+            alienY--;
+            for (int i = 0; i < aliens.length; i++) {
+                if (aliens[i] != null) {
+                    int aY = aliens[i].getY();
+                    if (aY != alienY && aY + 1 != alienY && aY - 1 != alienY) {          
+                        counter++;
+                    }
+                }
+            }
+            if (counter == aliens.length - 1 && alienX != playerX || alienY != playerY && tiles[alienX][alienY] != TileType.BLACK_HOLE) {
+                a.setPosition(alienX, alienY);
+            }
+        }
+
+     
         for (Asteroid asteroid : asteroids) {
             if (asteroid != null && asteroid.getX() == alienX && asteroid.getY() == alienY) {
                 counter = 0;
@@ -682,8 +687,8 @@ public class GameEngine {
      * Spawns asteroids in suitable locations in the current level. The method
      * uses the spawns ArrayList to pick suitable positions to add asteroids,
      * removing these positions from the spawns ArrayList as they are used
-     * (using the remove() method) to avoid multiple entities spawning in the
-     * same location. The method creates asteroids by repeatedly instantiating
+     * to avoid multiple entities spawning in the same location. 
+     * The method creates asteroids by repeatedly instantiating
      * the Asteroid class and setting the X and Y position for the asteroid
      * using the Point object removed from the spawns ArrayList.
      *
@@ -697,12 +702,12 @@ public class GameEngine {
             asteroids[i] = null;
         }
         while (counter < asteroids.length / 5) {
-            int aIndex = (int) (rng.nextDouble() * asteroids.length);
-            Point asteroidPoint = getSpawns().get(aIndex);
-            if (asteroids[aIndex] == null) {
-                getSpawns().remove(aIndex);
+            int randomIndex = rng.nextInt(asteroids.length);
+            Point asteroidPoint = getSpawns().get(randomIndex);
+            if (asteroids[randomIndex] == null) {
+                getSpawns().remove(randomIndex);
                 Asteroid newAsteroid = new Asteroid((int) asteroidPoint.getX(), (int) asteroidPoint.getY());
-                asteroids[aIndex] = newAsteroid;
+                asteroids[randomIndex] = newAsteroid;
                 counter++;
             }
         }
@@ -747,15 +752,11 @@ public class GameEngine {
      * the eight tiles adjacent to the active pulsar, when this method is
      * called. The method uses the player's current x and y position and
      * searches around the player looking for pulsar tiles. Any pulsar tiles
-     * found this way result in a call to the changeHullStrength method for the
-     * player object to damage the player.
+     * found this way result in a reduce of player's strength by 5
      */
     private void pulsarDamage() {
         int playerX = player.getX();
         int playerY = player.getY();
-//        00 10 20
-//        01 11 21
-//        02 12 22
 
         for (int i = playerX - 1; i < playerX + 1; i++) {
             for (int j = playerY - 1; j < playerY + 1; j++) {
@@ -768,8 +769,28 @@ public class GameEngine {
             }
         }
     }
+    
+//    public void blastersOn() {
+//        int counter = 0;
+//        if (points > 0) {
+//            for (int i = 0; i < blasters.length; i++) {
+//                if (blasters[i] == null) {
+//                    counter++;
+//                }
+//                
+//            }
+//            if (counter == blasters.length) {
+//                fireBlaster();
+//            }
+//        }
+//    }
 
-    public Blaster[] fireBlaster() {
+    /**
+     * Fills blasters array with the Blaster objects, each one with different
+     * position and direction of movement.
+     * @return An array of updates blasters
+     */
+    private Blaster[] fireBlaster() {
         int playerX = player.getX();
         int playerY = player.getY();
         if (playerX > 0 && tiles[playerX - 1][playerY] != TileType.BLACK_HOLE) {
@@ -799,6 +820,14 @@ public class GameEngine {
         return blasters;
     }
 
+    /**
+     * Moves each blaster depending on its direction of movement, only if new position is on the board
+     * and is not occupied by BLACK_HOLE. Then checks if new location is occupied by asteroid. If yes, player's
+     * points are increased by on, and asteroid is set to equal.
+     * Checks also if new location is occupied by alien. If yes, alien's healyh is 
+     * decreased by 30.
+     * 
+     */
     private void moveBlasters() {
         int blasterX;
         int blasterY;
@@ -875,7 +904,7 @@ public class GameEngine {
                             if (asteroid.getX() == blasterX && asteroid.getY() == blasterY) {
                                 asteroid = null;
                                 points++;
-                                blasterCheck++;
+                             //   blasterCheck++;
                             }
                         }
                     }
@@ -901,21 +930,20 @@ public class GameEngine {
          * resets the value of points to zero, generates a new level by calling
          * the generateLevel method, fills the spawns ArrayList with suitable
          * spawn locations, then spawns aliens and asteroids. Finally it places
-         * the player in the new level by calling the placePlayer() method. Note
-         * that a new player object should not be created here as this will
-         * reset the player's health to maximum.
+         * the player in the new level by calling the placePlayer() method. 
          */
     private void newLevel() {
         cleared++;
         BLACK_HOLE_CHANCE += 0.01;
         PULSAR_CHANCE += 0.01;
         points = 0;
-        blasterCheck = 0;
+        player.hullStrength = player.maxHull;
+        //blasterCheck = 0;
         generateLevel();
         getSpawns();
         spawnAliens();
         spawnAsteroids();
-        spawnPlayer(); //uwaga tu było placePlayer
+        placePlayer(); 
         createBlastersList();
 
     }
@@ -979,8 +1007,8 @@ public class GameEngine {
         tiles = generateLevel();
         spawns = getSpawns();
         asteroids = spawnAsteroids();
-        aliens = spawnAliens();
         player = spawnPlayer();
+        aliens = spawnAliens();
         blasters = createBlastersList();
         gui.updateDisplay(tiles, player, aliens, asteroids, blasters);
     }
