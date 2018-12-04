@@ -45,7 +45,7 @@ public class InputHandler implements KeyListener {
             case KeyEvent.VK_RIGHT: engine.movePlayerRight(); break;//handle right arrow
             case KeyEvent.VK_UP: engine.movePlayerUp(); break;      //handle up arrow
             case KeyEvent.VK_DOWN: engine.movePlayerDown(); break;  //handle down arrow
-            case KeyEvent.VK_BACK_SPACE: engine.fireBlaster(); break; //booom
+//            case KeyEvent.VK_BACK_SPACE: engine.blastersOn(); break; //booom
         }
         engine.doTurn();    //any key press will result in this method being called
     }
