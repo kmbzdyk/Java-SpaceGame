@@ -78,8 +78,11 @@ public class GameEngine {
      */
     private int points = 0;
 
-    private int blasterCheck = 0;
-    
+    /**
+     * The array of Laser type objects.
+     * Null values in this array are skipped during drawing and movement processing.
+     */
+    private Laser[] lasers;
     
     /**
      * Tracks the current turn number. Used to control pulsar activation and
@@ -270,10 +273,10 @@ public class GameEngine {
      */
     private Alien[] spawnAliens() {
         int removeY;
-        int randomIndex = 0;
+        int randomIndex;
+        int counter = 0;
         Point alienPoint = null;
         aliens = new Alien[getSpawns().size()];
-        int counter = 0;
         Point[] tilesForAliens = new Point[getSpawns().size()];
         for (int i = 0; i < getSpawns().size(); i++) {
             aliens[i] = null;
@@ -594,14 +597,17 @@ public class GameEngine {
                 moveAlien(newAlien);
             }
         }
-        if (cleared % 2 == 0) {
+        if (turnNumber % 2 == 0) {
             aliensLasers();
+        }
+        else {
+            noLasers();
         }
     }
 
     /**
-     * Moves a specific alien in the game. The method updates the X and Y
-     * attributes of the alien to reflect its new position.
+     * Moves a specific alien in the game. The method updates the X
+     * attribute of the alien to reflect its new position.
      *
      * @param a The Alien that needs to be moved
      */
@@ -613,6 +619,8 @@ public class GameEngine {
         int counter = 0;
         boolean randomDirection = rng.nextBoolean();
         
+        //If statement moves alien to the right or to the left - it depends on 
+        //the variable randomDirection
         if (randomDirection == true && alienX < (GRID_WIDTH - 1) && tiles[alienX + 1][alienY] != TileType.BLACK_HOLE && tiles[alienX + 1][alienY] != TileType.PULSAR_ACTIVE && tiles[alienX + 1][alienY] != TileType.PULSAR_INACTIVE) {
             alienX++;
                 if (alienX != playerX || alienY != playerY) {
@@ -626,7 +634,8 @@ public class GameEngine {
                 }
         }
 
-     
+        //Loop iterates through asteroids array to check if any of them is in the same position
+        //as alien. If yes, alien's health is increased by 10.
         for (Asteroid asteroid : asteroids) {
             if (asteroid != null && asteroid.getX() == alienX && asteroid.getY() == alienY) {
                 counter = 0;
@@ -648,10 +657,15 @@ public class GameEngine {
             }
         }
     }
-   
-    private void aliensLasers() {
+    
+    /**
+     * Method iterates through aliens array and for each alien it adds
+     * every tile to his right to lasers array until it is BLACK_HOLE.
+     * @return An array of Laser type objects
+     */
+    private Laser[] aliensLasers() {
         int counter = 0;
-        Laser[] lasers = new Laser[GRID_WIDTH * GRID_HEIGHT];
+        lasers = new Laser[GRID_WIDTH * GRID_HEIGHT];
         for (int i = 0; i < lasers.length; i++) {
             lasers[i] = null;            
         }
@@ -671,6 +685,29 @@ public class GameEngine {
                 }
             }
         }
+        for (int i = 0; i < lasers.length; i++) {
+            if (lasers[i] != null && lasers[i].getX() == player.getX() && lasers[i].getY() == player.getY()) {
+                if (player.hullStrength > 30) {
+                    player.hullStrength -= 30;
+                } 
+                else {
+                    player.hullStrength = 0;
+                }
+            }
+            
+        }
+        return lasers;
+    }
+    
+    /**
+     * 
+     * @return An array of Laser type objects
+     */
+    private Laser[] noLasers() {
+        for (int i = 0; i < lasers.length; i++) {
+                lasers[i] = null;              
+            }
+        return lasers;
     }
 
     /**
@@ -761,14 +798,18 @@ public class GameEngine {
         }
     }
     
+    /**
+     * If number of points is bigger than 4, the method checks if every blaster
+     * is equal to null. If yes, that means there is no blaster on the board, so it calls 
+     * fireBlaster() method
+     */
     public void blastersOn() {
         int counter = 0;
-        if (points > 2) {
+        if (points > 4) {
             for (int i = 0; i < blasters.length; i++) {
                 if (blasters[i] == null) {
                     counter++;
-                }
-                
+                }               
             }
             if (counter == blasters.length) {
                 fireBlaster();
@@ -935,6 +976,7 @@ public class GameEngine {
         spawnAsteroids();
         placePlayer(); 
         createBlastersList();
+        noLasers();
 
     }
 
@@ -974,10 +1016,10 @@ public class GameEngine {
             System.exit(0);
         }
         pulsarDamage();
-        if (cleared < 5 && points >= 5) {
+        if (cleared < 10 && points >= 10) {
             newLevel();
         }
-        gui.updateDisplay(tiles, player, aliens, asteroids, blasters);
+        gui.updateDisplay(tiles, player, aliens, asteroids, blasters, lasers);
         turnNumber++;
         System.out.println(points);
         System.out.println(cleared);
@@ -996,7 +1038,8 @@ public class GameEngine {
         player = spawnPlayer();
         aliens = spawnAliens();
         blasters = createBlastersList();
-        gui.updateDisplay(tiles, player, aliens, asteroids, blasters);
+        lasers = aliensLasers();
+        gui.updateDisplay(tiles, player, aliens, asteroids, blasters, lasers);
     }
 }
 
