@@ -72,6 +72,9 @@ public class GameEngine {
      */
     private int cleared = 0;
 
+    private int blastersCounter = 0;
+    
+    private int blastersControl = 0;
     /**
      * The number of points the player has gained this level. Used to track when
      * the current level is won and a new one should be generated.
@@ -804,12 +807,12 @@ public class GameEngine {
      * fireBlaster() method
      */
     public void blastersOn() {
+        System.out.println("boom");
         int counter = 0;
-        if (points > 4) {
-            for (int i = 0; i < blasters.length; i++) {
-                if (blasters[i] == null) {
-                    counter++;
-                }               
+        blastersControl = 1;
+        for (int i = 0; i < blasters.length; i++) {
+            if (blasters[i] == null) {
+                counter++;
             }
             if (counter == blasters.length) {
                 fireBlaster();
@@ -848,6 +851,33 @@ public class GameEngine {
         }
         if (playerX > 0 && playerY > 0 && playerY < GRID_HEIGHT - 1 && tiles[playerX - 1][playerY + 1] != TileType.BLACK_HOLE) {
             blasters[7] = new Blaster(playerX - 1, playerY + 1, Asteroid.Direction.DOWNLEFT);
+        }
+        for (int i = 0; i < blasters.length; i++) {
+            if (blasters[i] != null) {
+                    int blasterX = blasters[i].getX();
+                    int blasterY = blasters[i].getY();
+                    for (int j = 0; j < asteroids.length; j++) {
+                        if (asteroids[j] != null) {
+                            if (asteroids[j].getX() == blasterX && asteroids[j].getY() == blasterY) {
+                                asteroids[j] = null;
+                                points++;
+                            }
+                        }
+                    }
+                    for (int k = 0; k < aliens.length; k++) {
+                        if (aliens[k] != null) {
+                            if (aliens[k].getX() == blasterX && aliens[k].getY() == blasterY) {
+                                if (aliens[k].hullStrength > 29) {
+                                    aliens[k].hullStrength -= 30;
+                                } else {
+                                    aliens[k] = null;
+                                }
+                                blasters[i] = null;
+                            }
+                        }
+                    }
+                }
+            
         }
         return blasters;
     }
@@ -931,21 +961,21 @@ public class GameEngine {
                 if (blasters[i] != null) {
                     blasterX = blasters[i].getX();
                     blasterY = blasters[i].getY();
-                    for (Asteroid asteroid : asteroids) {
-                        if (asteroid != null) {
-                            if (asteroid.getX() == blasterX && asteroid.getY() == blasterY) {
-                                asteroid = null;
+                    for (int j = 0; j < asteroids.length; j++) {
+                        if (asteroids[j] != null) {
+                            if (asteroids[j].getX() == blasterX && asteroids[j].getY() == blasterY) {
+                                asteroids[j] = null;
                                 points++;
                             }
                         }
                     }
-                    for (Alien alien : aliens) {
-                        if (alien != null) {
-                            if (alien.getX() == blasterX && alien.getY() == blasterY) {
-                                if (alien.hullStrength > 29) {
-                                    alien.hullStrength -= 30;
+                    for (int k = 0; k < aliens.length; k++) {
+                        if (aliens[k] != null) {
+                            if (aliens[k].getX() == blasterX && aliens[k].getY() == blasterY) {
+                                if (aliens[k].hullStrength > 29) {
+                                    aliens[k].hullStrength -= 30;
                                 } else {
-                                    alien.hullStrength = 0;
+                                    aliens[k] = null;
                                 }
                                 blasters[i] = null;
                             }
@@ -965,11 +995,13 @@ public class GameEngine {
          * the player in the new level by calling the placePlayer() method. 
          */
     private void newLevel() {
+        System.out.println("new level");
         cleared++;
         BLACK_HOLE_CHANCE += 0.01;
         PULSAR_CHANCE += 0.01;
         points = 0;
         player.hullStrength = player.maxHull;
+        blastersCounter = 0;
         generateLevel();
         getSpawns();
         spawnAliens();
@@ -1009,9 +1041,28 @@ public class GameEngine {
         }
         if (turnNumber % 10 == 5) {
             moveAsteroids();
-        }
-        moveBlasters();                 
+        }  
         moveAliens();
+        if (blastersCounter < 5 && blastersControl >= 2) {
+            moveBlasters();
+            int counter = 0;
+            for (int i = 0; i < blasters.length; i++) {
+                if (blasters[i] != null) {
+                    counter++;
+                }
+            }
+            if (counter > 0) {
+                    blastersCounter++;
+            }
+            System.out.println(blastersCounter);
+        }
+        else if (blastersCounter >= 5) {
+            System.out.println(blastersCounter);
+            System.out.println("no blasters");
+            createBlastersList();
+            blastersCounter = 0;
+            blastersControl = 0;
+        }
         if (player.getHullStrength() < 1) {
             System.exit(0);
         }
@@ -1019,10 +1070,14 @@ public class GameEngine {
         if (cleared < 10 && points >= 10) {
             newLevel();
         }
+        if (cleared >= 10) {
+            System.exit(0);
+        }
         gui.updateDisplay(tiles, player, aliens, asteroids, blasters, lasers);
         turnNumber++;
-        System.out.println(points);
-        System.out.println(cleared);
+        blastersControl++;
+        System.out.println("points" + points);
+        System.out.println("level" + cleared);
     }
 
     /**
