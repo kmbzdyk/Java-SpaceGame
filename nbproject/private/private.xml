@@ -13,8 +13,10 @@
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/nbproject/genfiles.properties</file>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/assets/player.png</file>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/nbproject/project.xml</file>
+            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/assets/apulsar.png</file>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/src/uk/ac/bradford/spacegame/GameGUI.java</file>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/assets/asteroid.png</file>
+            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/nbproject/private/private.xml</file>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/src/uk/ac/bradford/spacegame/GameEngine.java</file>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/assets/blackhole.png</file>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/src/uk/ac/bradford/spacegame/Ship.java</file>
@@ -22,8 +24,8 @@
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/src/uk/ac/bradford/spacegame/Launcher.java</file>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/src/uk/ac/bradford/spacegame/Alien.java</file>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/src/uk/ac/bradford/spacegame/Entity.java</file>
-            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/assets/ipulsar.png</file>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/nbproject/project.properties</file>
+            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/assets/ipulsar.png</file>
         </group>
     </open-files>
 </project-private>
