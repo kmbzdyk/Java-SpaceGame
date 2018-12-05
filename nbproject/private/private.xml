@@ -4,14 +4,26 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/src/uk/ac/bradford/spacegame/InputHandler.java</file>
+            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/assets/laser.png</file>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/src/uk/ac/bradford/spacegame/Asteroid.java</file>
+            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/assets/space.png</file>
+            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/src/uk/ac/bradford/spacegame/Blaster.java</file>
+            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/nbproject/build-impl.xml</file>
+            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/src/uk/ac/bradford/spacegame/Player.java</file>
+            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/nbproject/genfiles.properties</file>
+            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/assets/player.png</file>
+            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/nbproject/project.xml</file>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/src/uk/ac/bradford/spacegame/GameGUI.java</file>
+            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/assets/asteroid.png</file>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/src/uk/ac/bradford/spacegame/GameEngine.java</file>
+            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/assets/blackhole.png</file>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/src/uk/ac/bradford/spacegame/Ship.java</file>
+            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/assets/alien.png</file>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/src/uk/ac/bradford/spacegame/Launcher.java</file>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/src/uk/ac/bradford/spacegame/Alien.java</file>
-            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/src/uk/ac/bradford/spacegame/Player.java</file>
             <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/src/uk/ac/bradford/spacegame/Entity.java</file>
+            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/assets/ipulsar.png</file>
+            <file>file:/Users/klaudiabzdyk/Desktop/2018FoPCoursework/nbproject/project.properties</file>
         </group>
     </open-files>
 </project-private>
