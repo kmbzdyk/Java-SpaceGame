@@ -86,8 +86,8 @@ public class GameGUI extends JFrame {
      * the blasters on the map. null elements in the array, or a null array are both
      * permitted, and any null arrays or null elements in the array will be sipped.
      */
-    public void updateDisplay(TileType[][] tiles, Player player, Alien[] aliens, Asteroid[] asteroids, Blaster[] blasters) {
-        canvas.update(tiles, player, aliens, asteroids, blasters);
+    public void updateDisplay(TileType[][] tiles, Player player, Alien[] aliens, Asteroid[] asteroids, Blaster[] blasters, Laser[] lasers) {
+        canvas.update(tiles, player, aliens, asteroids, blasters, lasers);
     }
     
 }
@@ -110,12 +110,14 @@ class Canvas extends JPanel {
     private BufferedImage ipulsar;
     private BufferedImage alien;
     private BufferedImage fireBall;
+    private BufferedImage laser;
     
     TileType[][] currentTiles;  //the current 2D array of tiles to display
     Player currentPlayer;       //the current player object to be drawn
     Alien[] currentAliens;   //the current array of monsters to draw
     Asteroid[] currentAsteroids;   //the current array of asteroids
     Blaster[] currentBlasters; //the current array of blasters
+    Laser[] currentLasers;
     
     /**
      * Constructor that loads tile images for use in this class
@@ -162,6 +164,9 @@ class Canvas extends JPanel {
             fireBall = ImageIO.read(new File("assets/fireBall.png"));
             assert fireBall.getHeight() == GameGUI.TILE_HEIGHT &&
                     fireBall.getWidth() == GameGUI.TILE_WIDTH;
+            laser = ImageIO.read(new File("assets/laser.png"));
+            assert laser.getHeight() == GameGUI.TILE_HEIGHT &&
+                    laser.getWidth() == GameGUI.TILE_WIDTH;
         } catch (IOException e) {
             System.out.println("Exception loading images: " + e.getMessage());
             e.printStackTrace(System.out);
@@ -175,12 +180,13 @@ class Canvas extends JPanel {
      * @param mon The array of monsters to display them and their health
      * @param bl The array of Blaster objects to display them
      */
-    public void update(TileType[][] t, Player player, Alien[] al, Asteroid[] as, Blaster[] bl) {
+    public void update(TileType[][] t, Player player, Alien[] al, Asteroid[] as, Blaster[] bl, Laser[] ls) {
         currentTiles = t;
         currentPlayer = player;
         currentAliens = al;
         currentAsteroids = as;
         currentBlasters = bl;
+        currentLasers = ls;
         repaint();
     }
     
@@ -246,6 +252,11 @@ class Canvas extends JPanel {
             for(Blaster bl : currentBlasters)
                 if (bl != null) {
                     g2.drawImage(fireBall, bl.getX() * GameGUI.TILE_WIDTH, bl.getY() * GameGUI.TILE_HEIGHT, null);
+                }
+        if (currentLasers != null)
+            for(Laser ls : currentLasers)
+                if (ls != null) {
+                    g2.drawImage(laser, ls.getX() * GameGUI.TILE_WIDTH, ls.getY() * GameGUI.TILE_HEIGHT, null);
                 }
         if (currentPlayer != null) {
             g2.drawImage(player, currentPlayer.getX() * GameGUI.TILE_WIDTH, currentPlayer.getY() * GameGUI.TILE_HEIGHT, null);
