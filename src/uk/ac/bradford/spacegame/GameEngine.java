@@ -278,6 +278,8 @@ public class GameEngine {
         int removeY;
         int randomIndex;
         int counter = 0;
+        int playerX;
+        int playerY;
         Point alienPoint = null;
         aliens = new Alien[getSpawns().size()];
         Point[] tilesForAliens = new Point[getSpawns().size()];
@@ -285,14 +287,12 @@ public class GameEngine {
             aliens[i] = null;
             tilesForAliens[i] = getSpawns().get(i);
         }
-        
-
         while (counter < cleared + 2) {
             randomIndex = rng.nextInt(tilesForAliens.length);
             alienPoint = tilesForAliens[randomIndex];
             if (player != null) {
-                int playerX = player.getX();
-                int playerY = player.getY();
+                playerX = player.getX();
+                playerY = player.getY();
                 if (aliens[randomIndex] == null && alienPoint != null) {
                     if (alienPoint.getX() != playerX || alienPoint.getY() != playerY) {
                         removeY = (int) alienPoint.getY();
@@ -308,6 +308,29 @@ public class GameEngine {
                         Alien newAlien = new Alien(50, (int) alienPoint.getX(), (int) alienPoint.getY());
                         aliens[randomIndex] = newAlien;
                         counter++;
+                    }
+                }
+            }
+            /**
+             * loop checks if there is asteroid in place for alien, if yes,
+             * asteroid is moved to another random location
+             */
+            for (Asteroid asteroid : asteroids) {
+                if (alienPoint != null && asteroid != null && asteroid.getX() == alienPoint.getX() && asteroid.getY() == alienPoint.getY()) {
+                    counter = 0;
+                    while (counter < 1) {
+                        if (player != null) {
+                            playerX = player.getX();
+                            playerY = player.getY();
+                            randomIndex = rng.nextInt(getSpawns().size());
+                            Point point = getSpawns().get(randomIndex);
+                            int pointX = (int) point.getX();
+                            int pointY = (int) point.getY();
+                            if (pointX != playerX || pointY != playerY) {
+                                asteroid.setPosition(pointX, pointY);
+                                counter++;
+                            }
+                        }
                     }
                 }
             }
@@ -643,7 +666,7 @@ public class GameEngine {
             if (asteroid != null && asteroid.getX() == alienX && asteroid.getY() == alienY) {
                 counter = 0;
                 while (counter < 1) {
-                    int randomIndex = (int) (rng.nextDouble() * getSpawns().size() - 1);
+                    int randomIndex = rng.nextInt(getSpawns().size());
                     Point point = getSpawns().get(randomIndex);
                     int pointX = (int) point.getX();
                     int pointY = (int) point.getY();
