@@ -72,8 +72,15 @@ public class GameEngine {
      */
     private int cleared = 0;
 
+    /**
+     * A variable which counts how many moves did blasters make.
+     */
     private int blastersCounter = 0;
     
+    /**
+     * A variable thanks to which blasters do not move in the same turn
+     * in which they are fired.
+     */
     private int blastersControl = 0;
     /**
      * The number of points the player has gained this level. Used to track when
@@ -186,8 +193,8 @@ public class GameEngine {
             }
         }
         /**
-         * loop for black holes which take random number for width and random for
-         * height for tiles and check if that tale is space, if no loop search
+         * loop for black holes which takes random number for width and random for
+         * height for tiles and checks if that tale is space, if no, loop search for
          * another tale, if yes loop puts black hole here, loop is executed
          * numberOfBHoles times
          */
@@ -202,8 +209,8 @@ public class GameEngine {
         }
 
         /**
-         * loop for pulsars which take random number for width and random for
-         * height for tiles and check if that tale is space, if no loop search
+         * loop for pulsars which takes random number for width and random for
+         * height for tiles and checks if that tale is space, if no loop search
          * another tale, if yes loop puts pulsar here, loop is executed
          * numberOfPulsars times
          * number of active and inactive pulsars is random
@@ -290,6 +297,7 @@ public class GameEngine {
             aliens[i] = null;
             tilesForAliens[i] = getSpawns().get(i);
         }
+        //loop creates Alien type objects (the amount specified by using cleared variable)
         while (counter < cleared + 2) {
             astCounter = 0;
             randomIndex = rng.nextInt(tilesForAliens.length);
@@ -381,6 +389,7 @@ public class GameEngine {
                 points--;
             }
         }
+        //loop checks if there is any alien in the new location 
         for (int i = 0; i < aliens.length; i++) {
             if ((aliens[i] != null && aliens[i].getX() == playerX) && (aliens[i].getY() == playerY)) {
                 if (player.hullStrength > 30) {
@@ -429,6 +438,7 @@ public class GameEngine {
                 points--;
             }
         }
+        //loop checks if there is any alien in the new location 
         for (int i = 0; i < aliens.length; i++) {
             if ((aliens[i] != null && aliens[i].getX() == playerX) && (aliens[i].getY() == playerY)) {
                 if (player.hullStrength > 30) {
@@ -478,6 +488,7 @@ public class GameEngine {
                 points--;
             }
         }
+        //loop checks if there is any alien in the new location 
         for (int i = 0; i < aliens.length; i++) {
             if (aliens[i] != null && aliens[i].getX() == playerX && aliens[i].getY() == playerY) {
                 if (player.hullStrength > 30) {
@@ -527,6 +538,7 @@ public class GameEngine {
                 points--;
             }
         }
+        //loop checks if there is any alien in the new location 
         for (int i = 0; i < aliens.length; i++) {
             if ((aliens[i] != null && aliens[i].getX() == playerX) && (aliens[i].getY() == playerY)) {
                 if (player.hullStrength > 30) {
@@ -548,7 +560,7 @@ public class GameEngine {
      * moveDirection value for the current asteroid object. Asteroids with a
      * moveDirection value other than NONE have their position updated
      * accordingly, and if their new position puts them outside the map or
-     * inside a black hole they are "destroyed". Destroyed asteroids are
+     * inside a black hole/any kind of a pulsar they are "destroyed". Destroyed asteroids are
      * replaced by creating a new, randomly positioned asteroid in the same
      * index of the asteroids array that the destroyed asteroid used to occupy.
      */
@@ -558,13 +570,14 @@ public class GameEngine {
                 int asteroidX = asteroids[i].getX();
                 int asteroidY = asteroids[i].getY();
                 Asteroid.Direction direction = asteroids[i].getMovementDirection();
-                int pIndex = (int) (rng.nextDouble() * getSpawns().size());
-                Point point = getSpawns().get(pIndex);
+                int randomIndex = rng.nextInt(getSpawns().size());
+                Point point = getSpawns().get(randomIndex);
+                //switch statement for each direction
                 switch (direction) {
                     case DOWN:
                         if (asteroidY == GRID_HEIGHT - 1) {
                             asteroids[i].setPosition((int) point.getX(), (int) point.getY());
-                            getSpawns().remove(pIndex);
+                            getSpawns().remove(randomIndex);
                         } else {
                             asteroids[i].setPosition(asteroidX, asteroidY + 1);
                         }
@@ -572,6 +585,7 @@ public class GameEngine {
                     case UP:
                         if (asteroidY == 0) {
                             asteroids[i].setPosition((int) point.getX(), (int) point.getY());
+                            getSpawns().remove(randomIndex);
                         } else {
                             asteroids[i].setPosition(asteroidX, asteroidY - 1);
                         }
@@ -579,6 +593,7 @@ public class GameEngine {
                     case RIGHT:
                         if (asteroidX == GRID_WIDTH - 1) {
                             asteroids[i].setPosition((int) point.getX(), (int) point.getY());
+                            getSpawns().remove(randomIndex);
                         } else {
                             asteroids[i].setPosition(asteroidX + 1, asteroidY);
                         }
@@ -586,6 +601,7 @@ public class GameEngine {
                     case LEFT:
                         if (asteroidX == 0) {
                             asteroids[i].setPosition((int) point.getX(), (int) point.getY());
+                            getSpawns().remove(randomIndex);
                         } else {
                             asteroids[i].setPosition(asteroidX - 1, asteroidY);
                         }
@@ -597,6 +613,7 @@ public class GameEngine {
                 asteroidY = asteroids[i].getY();
                 if (tiles[asteroidX][asteroidY] == TileType.BLACK_HOLE || tiles[asteroidX][asteroidY] == TileType.PULSAR_ACTIVE || tiles[asteroidX][asteroidY] == TileType.PULSAR_INACTIVE) {
                     asteroids[i].setPosition((int) point.getX(), (int) point.getY());
+                    getSpawns().remove(randomIndex);
                 }
             }
 
