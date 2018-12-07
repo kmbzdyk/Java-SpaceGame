@@ -7,7 +7,7 @@ package uk.ac.bradford.spacegame;
 
 /**
  *
- * @author kmbzdyk
+ * @author klaudiabzdyk
  */
 public class Laser extends Entity{
     public Laser(int x, int y) {
