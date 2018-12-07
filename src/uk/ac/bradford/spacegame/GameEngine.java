@@ -278,16 +278,20 @@ public class GameEngine {
         int removeY;
         int randomIndex;
         int counter = 0;
+        int astCounter = 0;
         int playerX;
         int playerY;
-        Point alienPoint = null;
+        Point alienPoint;
         aliens = new Alien[getSpawns().size()];
         Point[] tilesForAliens = new Point[getSpawns().size()];
+        //loop makes all aliens equal to null
+        //and adds all spawns to tilesForAliens array
         for (int i = 0; i < getSpawns().size(); i++) {
             aliens[i] = null;
             tilesForAliens[i] = getSpawns().get(i);
         }
         while (counter < cleared + 2) {
+            astCounter = 0;
             randomIndex = rng.nextInt(tilesForAliens.length);
             alienPoint = tilesForAliens[randomIndex];
             if (player != null) {
@@ -295,41 +299,28 @@ public class GameEngine {
                 playerY = player.getY();
                 if (aliens[randomIndex] == null && alienPoint != null) {
                     if (alienPoint.getX() != playerX || alienPoint.getY() != playerY) {
-                        removeY = (int) alienPoint.getY();
-                        for (int i = 0; i < tilesForAliens.length; i++) {
-                            if (tilesForAliens[i] != null) {
-                                Point spawn = tilesForAliens[i];
-                                int spawnY = (int) spawn.getY();
-                                if (spawnY == removeY) {
-                                    tilesForAliens[i] = null;
-                                }
+                        //loop checks if there is at least one asteroid in that position
+                        for (int i = 0; i < asteroids.length; i++) {
+                            if (asteroids[i] != null && asteroids[i].getX() == alienPoint.getX() && asteroids[i].getY() == alienPoint.getY()) {
+                                astCounter++;
                             }
                         }
-                        Alien newAlien = new Alien(50, (int) alienPoint.getX(), (int) alienPoint.getY());
-                        aliens[randomIndex] = newAlien;
-                        counter++;
-                    }
-                }
-            }
-            /**
-             * loop checks if there is asteroid in place for alien, if yes,
-             * asteroid is moved to another random location
-             */
-            for (Asteroid asteroid : asteroids) {
-                if (alienPoint != null && asteroid != null && asteroid.getX() == alienPoint.getX() && asteroid.getY() == alienPoint.getY()) {
-                    counter = 0;
-                    while (counter < 1) {
-                        if (player != null) {
-                            playerX = player.getX();
-                            playerY = player.getY();
-                            randomIndex = rng.nextInt(getSpawns().size());
-                            Point point = getSpawns().get(randomIndex);
-                            int pointX = (int) point.getX();
-                            int pointY = (int) point.getY();
-                            if (pointX != playerX || pointY != playerY) {
-                                asteroid.setPosition(pointX, pointY);
-                                counter++;
+                        if (astCounter < 1) {
+                            removeY = (int) alienPoint.getY();
+                            //delete every position with that y, because it can be only 
+                            //one alien in each row
+                            for (int i = 0; i < tilesForAliens.length; i++) {
+                                if (tilesForAliens[i] != null) {
+                                    Point spawn = tilesForAliens[i];
+                                    int spawnY = (int) spawn.getY();
+                                    if (spawnY == removeY) {
+                                        tilesForAliens[i] = null;
+                                    }
+                                }
                             }
+                            Alien newAlien = new Alien(50, (int) alienPoint.getX(), (int) alienPoint.getY());
+                            aliens[randomIndex] = newAlien;
+                            counter++;
                         }
                     }
                 }
@@ -713,8 +704,8 @@ public class GameEngine {
         }
         for (int i = 0; i < lasers.length; i++) {
             if (lasers[i] != null && lasers[i].getX() == player.getX() && lasers[i].getY() == player.getY()) {
-                if (player.hullStrength > 30) {
-                    player.hullStrength -= 30;
+                if (player.hullStrength > 20) {
+                    player.hullStrength -= 20;
                 } 
                 else {
                     player.hullStrength = 0;
@@ -726,7 +717,7 @@ public class GameEngine {
     }
     
     /**
-     * 
+     * Method makes all Laser objects in array equal to null
      * @return An array of Laser type objects
      */
     private Laser[] noLasers() {
@@ -754,7 +745,7 @@ public class GameEngine {
         for (int i = 0; i < asteroids.length; i++) {
             asteroids[i] = null;
         }
-        while (counter < asteroids.length / 5) {
+        while (counter < asteroids.length / 10) {
             int randomIndex = rng.nextInt(asteroids.length);
             Point asteroidPoint = getSpawns().get(randomIndex);
             if (asteroids[randomIndex] == null) {
@@ -819,18 +810,16 @@ public class GameEngine {
                         player.hullStrength -= 10;
                     }
                 }
-
             }
         }
     }
     
     /**
-     * If number of points is bigger than 4, the method checks if every blaster
+     * The method checks if every blaster
      * is equal to null. If yes, that means there is no blaster on the board, so it calls 
      * fireBlaster() method
      */
     public void blastersOn() {
-        System.out.println("boom");
         int counter = 0;
         blastersControl = 1;
         for (int i = 0; i < blasters.length; i++) {
@@ -1023,12 +1012,11 @@ public class GameEngine {
         BLACK_HOLE_CHANCE += 0.01;
         PULSAR_CHANCE += 0.01;
         points = 0;
-        player.hullStrength = player.maxHull;
         blastersCounter = 0;
         generateLevel();
         getSpawns();
-        spawnAliens();
         spawnAsteroids();
+        spawnAliens();
         placePlayer(); 
         createBlastersList();
         noLasers();
@@ -1042,7 +1030,12 @@ public class GameEngine {
      * x and y values of the Point taken from the spawns ArrayList.
      */
     private void placePlayer() {
-
+        int randomTale = rng.nextInt(getSpawns().size());
+        Point xPoint = getSpawns().get(randomTale);
+        int x = (int) xPoint.getX();
+        int y = (int) xPoint.getY();
+        getSpawns().remove(randomTale);
+        player.setPosition(x, y);
     }
 
     /**
@@ -1064,7 +1057,7 @@ public class GameEngine {
         }
         if (turnNumber % 10 == 5) {
             moveAsteroids();
-        }  
+        }
         moveAliens();
         if (blastersCounter < 5 && blastersControl >= 2) {
             moveBlasters();
@@ -1075,13 +1068,11 @@ public class GameEngine {
                 }
             }
             if (counter > 0) {
-                    blastersCounter++;
+                blastersCounter++;
             }
-            System.out.println(blastersCounter);
-        }
+        } 
+        //blasters disappear after 5 moves
         else if (blastersCounter >= 5) {
-            System.out.println(blastersCounter);
-            System.out.println("no blasters");
             createBlastersList();
             blastersCounter = 0;
             blastersControl = 0;
