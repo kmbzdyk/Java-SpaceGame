@@ -85,11 +85,13 @@ public class GameGUI extends JFrame {
      * @param blasters An array of Blaster objects that is processed to draw 
      * the blasters on the map. null elements in the array, or a null array are both
      * permitted, and any null arrays or null elements in the array will be sipped.
+     * @param lasers An array of Laser objects that is processed to draw the lasers 
+     * on the map. null elements in the array, or a null array are both permitted,
+     * and any null arrays or null elements in the array will be skipped.
      */
     public void updateDisplay(TileType[][] tiles, Player player, Alien[] aliens, Asteroid[] asteroids, Blaster[] blasters, Laser[] lasers) {
         canvas.update(tiles, player, aliens, asteroids, blasters, lasers);
-    }
-    
+    }  
 }
 
 /**
@@ -179,6 +181,7 @@ class Canvas extends JPanel {
      * @param player The current player object, used to draw the player and its health
      * @param mon The array of monsters to display them and their health
      * @param bl The array of Blaster objects to display them
+     * @param ls The array of Laser objects to display them
      */
     public void update(TileType[][] t, Player player, Alien[] al, Asteroid[] as, Blaster[] bl, Laser[] ls) {
         currentTiles = t;
