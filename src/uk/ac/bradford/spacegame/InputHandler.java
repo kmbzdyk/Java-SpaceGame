@@ -8,7 +8,7 @@ import java.awt.event.KeyListener;
  * that are passed to an instance of this class. The class is responsible for
  * calling methods in the GameEngine class that will update tiles, players and
  * aliens for the various key presses that are handled.
- * @author prtrundl
+ * @author prtrundl & klaudiabzdyk
  */
 public class InputHandler implements KeyListener {
 
@@ -45,7 +45,7 @@ public class InputHandler implements KeyListener {
             case KeyEvent.VK_RIGHT: engine.movePlayerRight(); break;//handle right arrow
             case KeyEvent.VK_UP: engine.movePlayerUp(); break;      //handle up arrow
             case KeyEvent.VK_DOWN: engine.movePlayerDown(); break;  //handle down arrow
-            case KeyEvent.VK_SHIFT: engine.blastersOn(); break; //booom
+            case KeyEvent.VK_SHIFT: engine.blastersOn(); break; //handle shift
         }
         engine.doTurn();    //any key press will result in this method being called
     }
